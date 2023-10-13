@@ -31,7 +31,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	//SphereRadius = 500.0f;
-
+	//test
 }
 
 // Called every frame
