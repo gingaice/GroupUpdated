@@ -4,42 +4,43 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Enemy.generated.h"
+#include "DoorTele.generated.h"
 
 class USphereComponent;
 
 UCLASS()
-class MYPROJECT_API AEnemy : public AActor
+class MYPROJECT_API ADoorTele : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AEnemy();
+	ADoorTele();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	float DotProduct;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// declare collision component
 	UPROPERTY(VisibleAnywhere)
-		class USphereComponent* MyCollisionSphere;
+	class USphereComponent* MyCollisionSphere;
 
 	// declare mesh component
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* MyMesh;
+	class UStaticMeshComponent* MyMesh;
 
 	UPROPERTY(VisibleAnywhere)
 	float SphereRadius;
 
-	bool Movement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "doors")
+	FVector FirstDoor;
 
-	float timer = 10.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "doors")
+	FVector SecondDoor;
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

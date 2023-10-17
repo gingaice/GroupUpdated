@@ -22,7 +22,7 @@ AEnemy::AEnemy()
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
 	MyMesh->SetupAttachment(RootComponent);
 
-	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
+	//MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
 	//MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &APickUp::OnOverlapBegin);
 }
 
@@ -38,7 +38,7 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
 	//ROTATE TO PLAYER POS
@@ -74,6 +74,8 @@ void AEnemy::Tick(float DeltaTime)
 
 		//float timer = 10.0f;
 
+
+
 		timer = timer - DeltaTime;
 		UE_LOG(LogTemp, Warning, TEXT("timer is: %f "), timer);
 		if (timer <= 0) 
@@ -95,14 +97,16 @@ void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 
 		if (character != nullptr)
 		{
-			float DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+			DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+
+			character->health = character->health - 1;
 
 			UE_LOG(LogTemp, Warning, TEXT("dot prod character and enemy: %f "), DotProduct);
 
 			if (DotProduct < 0.0f)
 			{
 				Movement = true;
-				UE_LOG(LogTemp, Warning, TEXT("in view"));
+				//UE_LOG(LogTemp, Warning, TEXT("in view"));
 			}
 		}
 	}
