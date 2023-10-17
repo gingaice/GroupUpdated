@@ -36,11 +36,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float SphereRadius;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "doors")
-	FVector FirstDoor;
+	UPROPERTY(EditAnywhere, Category = "doors")
+	ADoorTele* otherDoor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "doors")
-	FVector SecondDoor;
+	UPROPERTY()
+	bool tele;
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

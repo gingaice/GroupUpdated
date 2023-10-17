@@ -21,6 +21,9 @@ ADoorTele::ADoorTele()
 
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
 	MyMesh->SetupAttachment(RootComponent);
+	
+	tele = false;
+	//otherDoor->SetupAttachment(RootComponent);
 
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ADoorTele::OnOverlapBegin);
 }
@@ -46,16 +49,22 @@ void ADoorTele::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class 
 
 	if (OtherActor && (OtherActor != this))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AnObjectIn"));
-
-		//AMyCharacterTest* character = Cast<AMyCharacterTest>(OtherActor);
-		if (OtherActor == character)
+		if (otherDoor) 
 		{
-			UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("AnObjectIn"));
 
-			character->SetActorLocation(SecondDoor);
-			//SetActorLocation()
+			//AMyCharacterTest* character = Cast<AMyCharacterTest>(OtherActor);
+			if (character && !otherDoor->tele)
+			{
+				tele = true;
+				UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
+				character->SetActorRotation(otherDoor->GetActorRotation());
+				character->GetController()->SetControlRotation(character->GetActorRotation());
+				character->SetActorLocation(otherDoor->GetActorLocation());
+				//SetActorLocation()
+			}
 		}
+
 
 		//Destroy();
 
