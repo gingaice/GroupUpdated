@@ -180,7 +180,7 @@ void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AAct
 
 void AMyProjectCharacter::Mantle()
 {
-	UE_LOG(LogTemp, Warning, TEXT("in air"));
+	UE_LOG(LogTemp, Warning, TEXT("in air")); // check if the object whilst jumping is climable, then do a set location upwards
 }
 
 void AMyProjectCharacter::StartSlip()
