@@ -50,7 +50,7 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AnObjectIn"));
-		/*
+		
 		//AMyCharacterTest* character = Cast<AMyCharacterTest>(OtherActor);
 		if (OtherActor == character)
 		{
@@ -66,7 +66,8 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 			Destroy();
 		}
-		*/ //WORKING CODE JUST DELETE COMMENTS AS ITS FOR SUPER JUMP TESTING FOR SHRINK PLAYERa 
+		 //WORKING CODE JUST DELETE COMMENTS AS ITS FOR SUPER JUMP TESTING FOR SHRINK PLAYERa 
+		/*
 		FVector scale = character->GetActorScale3D();
 		if (OtherActor == character)
 		{
@@ -76,8 +77,6 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 			Destroy();
 		}
-		//Destroy();
-
-		//character->IsSuperJump = true;
+		*/
 	}
 }

@@ -39,6 +39,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
+	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
 	//ROTATE TO PLAYER POS
@@ -51,6 +52,10 @@ void AEnemy::Tick(float DeltaTime)
 	//CHASE PLAYER POS IF IN AREA
 	//float thisNorm = GetActorLocation().Normalize();
 	//float otherNorm = NewLocation.Normalize();
+	if (_takeDmg == true)
+	{
+		ApplyDmg();
+	}
 
 	if (Movement) 
 	{
@@ -86,28 +91,50 @@ void AEnemy::Tick(float DeltaTime)
 	}
 }
 
+void AEnemy::ApplyDmg()
+{
+	character->health = character->health - 1;
+	UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
+}
+
 void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
-
-		AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
+		//AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
+		character = Cast<AMyProjectCharacter>(OtherActor);
 
 		if (character != nullptr)
 		{
 			DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
-
-			character->health = character->health - 1;
+			//_takeDmg = true;
+			//character->health = character->health - 1;
 
 			UE_LOG(LogTemp, Warning, TEXT("dot prod character and enemy: %f "), DotProduct);
 
 			if (DotProduct < 0.0f)
 			{
 				Movement = true;
+				_takeDmg = true;
 				//UE_LOG(LogTemp, Warning, TEXT("in view"));
 			}
+		}
+	}
+}
+
+void AEnemy::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("other fella left is : %s"), *OtherActor->GetName());
+
+		character = Cast<AMyProjectCharacter>(OtherActor);
+
+		if (character != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("other fella left is : %s"), *OtherActor->GetName());
+			_takeDmg = false;
 		}
 	}
 }

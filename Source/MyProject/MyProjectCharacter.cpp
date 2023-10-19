@@ -47,6 +47,14 @@ AMyProjectCharacter::AMyProjectCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	health = 10;
+
+	SphereRadius = 150.0f;
+
+	MyCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("My Sphere Component"));
+	MyCollisionSphere->InitSphereRadius(SphereRadius);
+	MyCollisionSphere->SetCollisionProfileName("Trigger");
+	MyCollisionSphere->SetupAttachment(RootComponent);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -85,6 +93,30 @@ void AMyProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+// Called every frame
+void AMyProjectCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyProjectCharacter::OnOverlapBegin);
+	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AMyProjectCharacter::OnOverlapEnd);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
+
+	if (IsSprinting)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
+	}
+
+	if (!GetCharacterMovement()->IsMovingOnGround()) //is jumping
+	{
+		_inAir = true;
+	}
+
+	if (_inAir) 
+	{
+		Mantle();
+	}
 }
 
 void AMyProjectCharacter::MoveForward(float Value)
@@ -128,15 +160,27 @@ void AMyProjectCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-// Called every frame
-void AMyProjectCharacter::Tick(float DeltaTime)
+void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
-
-	if (IsSprinting)
+	if (OtherActor && (OtherActor != this))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
+		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
+		_inAir = false;
 	}
+}
+
+void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("other left fella is : %s"), *OtherActor->GetName());
+		_inAir = true;
+	}
+}
+
+void AMyProjectCharacter::Mantle()
+{
+	UE_LOG(LogTemp, Warning, TEXT("in air"));
 }
 
 void AMyProjectCharacter::StartSlip()

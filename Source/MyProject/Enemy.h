@@ -41,7 +41,17 @@ public:
 
 	float timer = 10.0f;
 
+	bool _takeDmg = false;
+
+	UFUNCTION()
+	void ApplyDmg();
+
+	UPROPERTY()
+	class AMyProjectCharacter* character;
+
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };
