@@ -112,10 +112,9 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 	{
 		_inAir = true;
 	}
-
-	if (_inAir) 
+	else
 	{
-		Mantle();
+		_inAir = false;
 	}
 }
 
@@ -165,7 +164,14 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
-		_inAir = false;
+		_mantleClimb = true;
+
+		if (_inAir)
+		{
+			//_curMantleUp = character->GetActorLocation(); THIS LINE CRASHES THE FUCK OUT OF UNREAL WHYY
+			
+			Mantle();
+		}
 	}
 }
 
@@ -174,13 +180,41 @@ void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AAct
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other left fella is : %s"), *OtherActor->GetName());
-		_inAir = true;
+		_mantleClimb = false;
 	}
 }
 
 void AMyProjectCharacter::Mantle()
 {
-	UE_LOG(LogTemp, Warning, TEXT("in air")); // check if the object whilst jumping is climable, then do a set location upwards
+	//UE_LOG(LogTemp, Warning, TEXT("in air")); // check if the object whilst jumping is climable, then do a set location upwards
+	if (_mantleClimb) 
+	{	
+		for (int i = 0; i < 1; i++) 
+		{
+			_curMantleUp.X = this->GetActorLocation().X;
+			_curMantleUp.Y = this->GetActorLocation().Y;
+			_curMantleUp.Z = this->GetActorLocation().Z +5;
+
+			UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
+			UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
+			UE_LOG(LogTemp, Warning, TEXT("The Z float value is: %f"), _curMantleUp.Z);
+
+			this->SetActorLocation(_curMantleUp);
+
+			bool _justDone = true;
+		}
+		
+		/*
+		_curMantleUp.X = character->GetActorLocation().X;
+		_curMantleUp.Y = character->GetActorLocation().Y + 20;
+		_curMantleUp.Z = character->GetActorLocation().Z;
+		UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
+		UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
+		UE_LOG(LogTemp, Warning, TEXT("The Z float value is: %f"), _curMantleUp.Z);
+		*/
+		//character->SetActorLocation(_curMantleUp);
+	}
+
 }
 
 void AMyProjectCharacter::StartSlip()
@@ -205,12 +239,6 @@ void AMyProjectCharacter::StopSprint()
 	GetCharacterMovement()->MaxWalkSpeed = NormalMoveSpeed;
 }
 
-//void AMyCharacterTest::SuperJump()
-//{
-	//ChargingSuper = true;
-	//JumpTimer = 3;
-//}
-
 void AMyProjectCharacter::NormJump()
 {
 	//APickUp* boolian = Cast<APickUp>(other)
@@ -230,16 +258,3 @@ void AMyProjectCharacter::NormJump()
 		Jump();
 	}
 }
-/*
-void AMyCharacterTest::SuperJumped()
-{
-	if (IsSuperJump)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Super Jump"));
-		GetCharacterMovement()->JumpZVelocity = 1600.f;
-		Jump();
-		//JumpTimer = 3;
-		//StopSuperJumping();
-	}
-}
-*/

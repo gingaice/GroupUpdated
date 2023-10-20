@@ -90,7 +90,8 @@ protected:
 	class AMyProjectCharacter* character;
 
 	bool _inAir;
-
+	bool _mantleClimb;
+	FVector _curMantleUp;
 	void Mantle();
 public:
 	// Called to bind functionality to input
