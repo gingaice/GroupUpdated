@@ -157,6 +157,7 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 		_mantleClimb = true;
+		
 		if (!GetCharacterMovement()->IsMovingOnGround()) //is jumping
 		{
 			_inAir = true;
@@ -165,6 +166,7 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 		{
 			_inAir = false;
 		}
+
 		if (_inAir)
 		{
 			//_curMantleUp = character->GetActorLocation(); THIS LINE CRASHES THE FUCK OUT OF UNREAL WHYY
