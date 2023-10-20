@@ -91,6 +91,8 @@ protected:
 
 	bool _inAir;
 	bool _mantleClimb;
+	bool _justDone;
+	float _climbTimer = 3.0f;
 	FVector _curMantleUp;
 	void Mantle();
 public:

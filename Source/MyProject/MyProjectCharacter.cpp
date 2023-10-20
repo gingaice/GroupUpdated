@@ -108,14 +108,6 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
 	}
 
-	if (!GetCharacterMovement()->IsMovingOnGround()) //is jumping
-	{
-		_inAir = true;
-	}
-	else
-	{
-		_inAir = false;
-	}
 }
 
 void AMyProjectCharacter::MoveForward(float Value)
@@ -165,7 +157,14 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 		_mantleClimb = true;
-
+		if (!GetCharacterMovement()->IsMovingOnGround()) //is jumping
+		{
+			_inAir = true;
+		}
+		else
+		{
+			_inAir = false;
+		}
 		if (_inAir)
 		{
 			//_curMantleUp = character->GetActorLocation(); THIS LINE CRASHES THE FUCK OUT OF UNREAL WHYY
@@ -180,7 +179,9 @@ void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AAct
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other left fella is : %s"), *OtherActor->GetName());
+		_justDone = true;
 		_mantleClimb = false;
+		_inAir = false;
 	}
 }
 
@@ -189,11 +190,12 @@ void AMyProjectCharacter::Mantle()
 	//UE_LOG(LogTemp, Warning, TEXT("in air")); // check if the object whilst jumping is climable, then do a set location upwards
 	if (_mantleClimb) 
 	{	
-		for (int i = 0; i < 1; i++) 
+		
+		if(!_justDone)
 		{
 			_curMantleUp.X = this->GetActorLocation().X;
 			_curMantleUp.Y = this->GetActorLocation().Y;
-			_curMantleUp.Z = this->GetActorLocation().Z +5;
+			_curMantleUp.Z = this->GetActorLocation().Z +20;
 
 			UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
 			UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
@@ -201,9 +203,18 @@ void AMyProjectCharacter::Mantle()
 
 			this->SetActorLocation(_curMantleUp);
 
-			bool _justDone = true;
+			_justDone = true;
+			_climbTimer = 3.0f;
 		}
-		
+		if (_justDone)
+		{
+			_climbTimer = _climbTimer - 0.1f;
+
+			if (_climbTimer <= 0)
+			{
+				_justDone = false;
+			}
+		}
 		/*
 		_curMantleUp.X = character->GetActorLocation().X;
 		_curMantleUp.Y = character->GetActorLocation().Y + 20;
