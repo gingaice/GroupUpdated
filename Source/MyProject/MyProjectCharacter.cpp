@@ -108,6 +108,19 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
 	}
 
+	if (_justDone)
+	{
+		_climbTimer = _climbTimer - DeltaTime;
+		//UE_LOG(LogTemp, Warning, TEXT("The Climb value is: %f"), _climbTimer);
+		if (_climbTimer <= 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("The Climb value is: %f"), _climbTimer);
+			UE_LOG(LogTemp, Warning, TEXT("bing bong crash why"));
+			MyCollisionSphere->SetSphereRadius(SphereRadius);
+			_justDone = false;
+			_climbTimer = 3.0f;
+		}
+	}
 }
 
 void AMyProjectCharacter::MoveForward(float Value)
@@ -172,6 +185,7 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 			//_curMantleUp = character->GetActorLocation(); THIS LINE CRASHES THE FUCK OUT OF UNREAL WHYY
 			
 			Mantle();
+			MyCollisionSphere->SetSphereRadius(0);
 		}
 	}
 }
@@ -197,26 +211,18 @@ void AMyProjectCharacter::Mantle()
 		{
 			_curMantleUp.X = this->GetActorLocation().X;
 			_curMantleUp.Y = this->GetActorLocation().Y;
-			_curMantleUp.Z = this->GetActorLocation().Z +20;
+			_curMantleUp.Z = this->GetActorLocation().Z +125;
 
-			UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
-			UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
-			UE_LOG(LogTemp, Warning, TEXT("The Z float value is: %f"), _curMantleUp.Z);
+			//UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
+			//UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
+			//UE_LOG(LogTemp, Warning, TEXT("The Z float value is: %f"), _curMantleUp.Z);
 
 			this->SetActorLocation(_curMantleUp);
-
+			//_climbTimer = 3.0f;
 			_justDone = true;
-			_climbTimer = 3.0f;
 		}
-		if (_justDone)
-		{
-			_climbTimer = _climbTimer - 0.1f;
 
-			if (_climbTimer <= 0)
-			{
-				_justDone = false;
-			}
-		}
+		//MyCollisionSphere->SetSphereRadius(SphereRadius);
 		/*
 		_curMantleUp.X = character->GetActorLocation().X;
 		_curMantleUp.Y = character->GetActorLocation().Y + 20;
@@ -227,7 +233,7 @@ void AMyProjectCharacter::Mantle()
 		*/
 		//character->SetActorLocation(_curMantleUp);
 	}
-
+	//MyCollisionSphere->SetSphereRadius(SphereRadius);
 }
 
 void AMyProjectCharacter::StartSlip()
