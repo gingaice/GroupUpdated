@@ -195,7 +195,7 @@ void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AAct
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other left fella is : %s"), *OtherActor->GetName());
-		_justDone = true;
+		//_justDone = true;
 		_mantleClimb = false;
 		_inAir = false;
 	}

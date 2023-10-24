@@ -54,7 +54,8 @@ void AEnemy::Tick(float DeltaTime)
 	//float otherNorm = NewLocation.Normalize();
 	if (_takeDmg == true)
 	{
-		ApplyDmg();
+		character->health = character->health - DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
 	}
 
 	if (Movement) 
@@ -79,8 +80,6 @@ void AEnemy::Tick(float DeltaTime)
 
 		//float timer = 10.0f;
 
-
-
 		timer = timer - DeltaTime;
 		UE_LOG(LogTemp, Warning, TEXT("timer is: %f "), timer);
 		if (timer <= 0) 
@@ -89,12 +88,6 @@ void AEnemy::Tick(float DeltaTime)
 			Destroy();
 		}
 	}
-}
-
-void AEnemy::ApplyDmg()
-{
-	character->health = character->health - 1;
-	UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
 }
 
 void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

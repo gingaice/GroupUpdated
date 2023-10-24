@@ -43,8 +43,6 @@ public:
 
 	bool _takeDmg = false;
 
-	UFUNCTION()
-	void ApplyDmg();
 
 	UPROPERTY()
 	class AMyProjectCharacter* character;
