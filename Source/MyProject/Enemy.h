@@ -12,8 +12,8 @@ UCLASS()
 class MYPROJECT_API AEnemy : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AEnemy();
 
@@ -22,17 +22,17 @@ protected:
 	virtual void BeginPlay() override;
 
 	float DotProduct;
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// declare collision component
 	UPROPERTY(VisibleAnywhere)
-		class USphereComponent* MyCollisionSphere;
+	class USphereComponent* MyCollisionSphere;
 
 	// declare mesh component
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* MyMesh;
+	class UStaticMeshComponent* MyMesh;
 
 	UPROPERTY(VisibleAnywhere)
 	float SphereRadius;
@@ -43,13 +43,12 @@ public:
 
 	bool _takeDmg = false;
 
-
 	UPROPERTY()
 	class AMyProjectCharacter* character;
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	UFUNCTION()
 	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 };

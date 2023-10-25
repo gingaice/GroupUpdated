@@ -13,19 +13,19 @@ class AMyProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-		/** Camera boom positioning the camera behind the character */
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* CameraBoom;
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
+	class UCameraComponent* FollowCamera;
 public:
 	// Sets default values for this character's properties
 	AMyProjectCharacter();
 
 	UPROPERTY(VisibleAnywhere)
-		bool IsSuperJump;
+	bool IsSuperJump;
 
 
 	UPROPERTY(VisibleAnywhere)
@@ -33,20 +33,20 @@ public:
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		float BaseTurnRate;
+	float BaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		float BaseLookUpRate;
+	float BaseLookUpRate;
 
-	UPROPERTY(EditAnywhere)
-		float health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+	float health;
 
-		UPROPERTY(VisibleAnywhere)
-		class USphereComponent* MyCollisionSphere;
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* MyCollisionSphere;
 
-		UPROPERTY(VisibleAnywhere)
-		float SphereRadius;
+	UPROPERTY(VisibleAnywhere)
+	float SphereRadius;
 
 protected:
 	// Called when the game starts or when spawned
@@ -79,12 +79,12 @@ protected:
 
 	const float NormalMoveSpeed = 600.0f;
 
-	//void SuperJump();
-
-	//bool ChargingSuper;
 	void NormJump();
-	//float JumpTimer;
-	//void SuperJumped();
+	void StopJumping();
+	bool _canCharge = false;
+	bool _IsCharged = false;
+	float _jumpTimer = 2.0f;
+
 
 	UPROPERTY()
 	class AMyProjectCharacter* character;

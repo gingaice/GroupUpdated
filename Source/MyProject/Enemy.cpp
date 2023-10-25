@@ -9,10 +9,10 @@
 // Sets default values
 AEnemy::AEnemy()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereRadius = 500.0f;
+	SphereRadius = 1000.0f;
 
 	MyCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("My Sphere Component"));
 	MyCollisionSphere->InitSphereRadius(SphereRadius);
@@ -47,45 +47,72 @@ void AEnemy::Tick(float DeltaTime)
 	FVector FacingVector = NewLocation - GetActorLocation();
 	FRotator FacingRotate = FacingVector.Rotation();
 	FQuat QuatRotation = FQuat(FacingRotate);
+	FVector EnemyLocation = this->GetActorLocation();
 	//SetActorRotation(QuatRotation, ETeleportType::None);
 
 	//CHASE PLAYER POS IF IN AREA
 	//float thisNorm = GetActorLocation().Normalize();
 	//float otherNorm = NewLocation.Normalize();
-	if (_takeDmg == true)
-	{
-		character->health = character->health - DeltaTime;
-		UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
-	}
 
-	if (Movement) 
-	{
-		FVector EnemyLocation = this->GetActorLocation();
 
-		//NewLocation is the character
+	if (Movement)
+	{
+		//FVector EnemyLocation = this->GetActorLocation();
 
 		FVector MovementVector = NewLocation - EnemyLocation;
 
 		MovementVector.Normalize();
-		//SetActorRotation(QuatRotation, ETeleportType::None);
-
 		FVector CurLoc = GetActorLocation();
-		float speed = 150.0f;
+		float speed = 400.0f;
 
-		//SetActorRotation(QuatRotation, ETeleportType::None);
 		FVector Vel = (MovementVector * speed * DeltaTime);
-		//CurLoc.X += speed * DeltaTime;
 
-		SetActorLocationAndRotation((CurLoc + Vel),QuatRotation);
+		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation); // caution means looks around near where player is, patrol is waypoints between back and forth for notes for paths?
+
+		//make states - idle standing chasing
 
 		//float timer = 10.0f;
 
 		timer = timer - DeltaTime;
-		UE_LOG(LogTemp, Warning, TEXT("timer is: %f "), timer);
-		if (timer <= 0) 
+		//UE_LOG(LogTemp, Warning, TEXT("timer is: %f "), timer);
+		if (timer <= 0)
 		{
-
 			Destroy();
+		}
+	}
+
+	if (_takeDmg == true)
+	{
+		if (character)
+		{
+			//character->health = character->health - DeltaTime;
+			//UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
+			UE_LOG(LogTemp, Warning, TEXT("health is: %f "), character->health);
+
+			FVector _distance;
+			float _floatdist = _distance.Dist(NewLocation, EnemyLocation);
+			if (_floatdist <= 1000)
+			{
+				SetActorRotation(QuatRotation);
+
+			}
+			else if (_floatdist <= 500)
+			{
+				character->health = character->health - (DeltaTime);
+			}
+			else if (_floatdist <= 300)
+			{
+				character->health = character->health - (DeltaTime * 1.5);
+			}
+			else if (_floatdist <= 100)
+			{
+				character->health = character->health - (DeltaTime * 2);
+			}
+			UE_LOG(LogTemp, Warning, TEXT("distance?: %f "), _floatdist);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("no char "));
 		}
 	}
 }
@@ -94,7 +121,7 @@ void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 {
 	if (OtherActor && (OtherActor != this))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 		//AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
 		character = Cast<AMyProjectCharacter>(OtherActor);
 
@@ -104,7 +131,7 @@ void AEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 			//_takeDmg = true;
 			//character->health = character->health - 1;
 
-			UE_LOG(LogTemp, Warning, TEXT("dot prod character and enemy: %f "), DotProduct);
+			//UE_LOG(LogTemp, Warning, TEXT("dot prod character and enemy: %f "), DotProduct);
 
 			if (DotProduct < 0.0f)
 			{
@@ -126,7 +153,7 @@ void AEnemy::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActo
 
 		if (character != nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("other fella left is : %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("other fella left is : %s"), *OtherActor->GetName());
 			_takeDmg = false;
 		}
 	}

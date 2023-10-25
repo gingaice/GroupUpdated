@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PickUp.h"
 
 // Sets default values
@@ -66,7 +67,7 @@ void AMyProjectCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMyProjectCharacter::NormJump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMyProjectCharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMyProjectCharacter::StartSprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMyProjectCharacter::StopSprint);
@@ -121,6 +122,29 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 			_climbTimer = 3.0f;
 		}
 	}
+
+
+	if (_canCharge)
+	{
+		_jumpTimer = _jumpTimer - DeltaTime;
+		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), _jumpTimer);
+		if (_jumpTimer >= 1.7)
+		{
+			GetCharacterMovement()->JumpZVelocity = 600.0f;
+			_IsCharged = true;
+		}
+		else if (_jumpTimer <= 0)
+		{
+			GetCharacterMovement()->JumpZVelocity = 1600.f;
+			_IsCharged = true;
+		}
+	}
+
+
+	if (health <= 0)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }
 
 void AMyProjectCharacter::MoveForward(float Value)
@@ -170,7 +194,7 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 	{
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 		_mantleClimb = true;
-		
+
 		if (!GetCharacterMovement()->IsMovingOnGround()) //is jumping
 		{
 			_inAir = true;
@@ -182,8 +206,6 @@ void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 
 		if (_inAir)
 		{
-			//_curMantleUp = character->GetActorLocation(); THIS LINE CRASHES THE FUCK OUT OF UNREAL WHYY
-			
 			Mantle();
 			MyCollisionSphere->SetSphereRadius(0);
 		}
@@ -204,14 +226,14 @@ void AMyProjectCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AAct
 void AMyProjectCharacter::Mantle()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("in air")); // check if the object whilst jumping is climable, then do a set location upwards
-	if (_mantleClimb) 
-	{	
-		
-		if(!_justDone)
+	if (_mantleClimb)
+	{
+
+		if (!_justDone)
 		{
 			_curMantleUp.X = this->GetActorLocation().X;
 			_curMantleUp.Y = this->GetActorLocation().Y;
-			_curMantleUp.Z = this->GetActorLocation().Z +125;
+			_curMantleUp.Z = this->GetActorLocation().Z + 125; // PERHAPS LOOK INTO ADD FORCE TO HAVE IT MOVE MORE SMOOTHLY
 
 			//UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
 			//UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
@@ -260,12 +282,26 @@ void AMyProjectCharacter::StopSprint()
 
 void AMyProjectCharacter::NormJump()
 {
-	//APickUp* boolian = Cast<APickUp>(other)
+	float _NormJumpVel = 600.0f;
 
 	if (!IsSuperJump)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("Why"));
+		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
+		Jump();
+	}
+	else if (IsSuperJump)
+	{
+		_canCharge = true;
+		//UE_LOG(LogTemp, Warning, TEXT("can charge"));
+
+	}
+
+	/*
+	if (!IsSuperJump)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Why"));
-		GetCharacterMovement()->JumpZVelocity = 600.f;
+		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
 		Jump();
 
 		//StopSuperJumping();
@@ -276,4 +312,20 @@ void AMyProjectCharacter::NormJump()
 		GetCharacterMovement()->JumpZVelocity = 1600.f;
 		Jump();
 	}
+	*/
+}
+
+void AMyProjectCharacter::StopJumping()
+{
+	if (_IsCharged)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("charged"));
+		Jump();
+		_jumpTimer = 2.0f;
+		//GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
+		_IsCharged = false;
+	}
+
+	_canCharge = false;
+	_jumpTimer = 2.0f;
 }
