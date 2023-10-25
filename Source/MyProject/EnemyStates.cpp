@@ -27,7 +27,10 @@ AEnemyStates::AEnemyStates()
 void AEnemyStates::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (ArrWaypoints.Num() >= 2) 
+	{
+		_CurWaypoint = 0;
+	}
 }
 
 // Called every frame
@@ -43,13 +46,14 @@ void AEnemyStates::Tick(float DeltaTime)
 
 void AEnemyStates::Patrol(float DeltaTime)
 {
+
 	if (ArrWaypoints.IsEmpty()) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("bing bong"));
 	}
 	else 
 	{
-		FVector targetVector = ArrWaypoints[1]->GetActorLocation();
+		FVector targetVector = ArrWaypoints[_CurWaypoint]->GetActorLocation();
 
 		FVector FacingVector = targetVector - GetActorLocation();
 		FRotator FacingRotate = FacingVector.Rotation();
@@ -64,6 +68,23 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
+
+		FVector _distance;
+		float _floatdist = _distance.Dist(targetVector, CurLoc);
+
+
+		if (_floatdist <= 5) 
+		{
+			_CurWaypoint = _CurWaypoint + 1;
+			//targetVector = ArrWaypoints[0]->GetActorLocation();
+
+			
+		}
+
+		if ((_CurWaypoint + 1) == ArrWaypoints.Num())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("bing bong"));
+		}
 	}
 }
 
