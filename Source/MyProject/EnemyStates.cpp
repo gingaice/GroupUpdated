@@ -145,7 +145,9 @@ void AEnemyStates::Alert(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
 	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 
+	// _enterpos for the entry point of contact do like go there lol
 
+	//find a way to spin the player before moving them that way
 }
 
 void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
