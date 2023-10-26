@@ -41,12 +41,23 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
-	if (inFov) 
+	if (_inTrigArea) 
 	{
-		Chasing(DeltaTime);
+		if (inFov)
+		{
+			Chasing(DeltaTime);
+		}
+		else 
+		{
+			Alert(DeltaTime);
+		}
 	}
 	else 
 	{
+		//perhaps have the character spin around slowly before going back into patrol here
+		//so the alert function is to get the enemy to move to last seen location then the spin happens here, either way chasing gets called off as soon as player is out of sight which i dislike
+
+
 		Patrol(DeltaTime);
 	}
 }
@@ -97,9 +108,9 @@ void AEnemyStates::Patrol(float DeltaTime)
 void AEnemyStates::Chasing(float DeltaTime)
 {
 	//ROTATE TO PLAYER POS
-	FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	FVector FacingVector = NewLocation - GetActorLocation();
-	FRotator FacingRotate = FacingVector.Rotation();
+	FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation(); //gets players pos
+	FVector FacingVector = NewLocation - GetActorLocation(); //to workout whats inbetween the stuff
+	FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
 	FQuat QuatRotation = FQuat(FacingRotate);
 	FVector EnemyLocation = this->GetActorLocation();
 
@@ -122,6 +133,14 @@ void AEnemyStates::Chasing(float DeltaTime)
 	}
 }
 
+void AEnemyStates::Alert(float DeltaTime)
+{
+	UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
+	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+
+
+}
+
 void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && (OtherActor != this))
@@ -130,6 +149,9 @@ void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 
 		if (character != nullptr)
 		{
+			_enterPos = OtherActor->GetActorLocation();
+			_inTrigArea = true;
+
 			DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
 
 			if (DotProduct < 0.0f)
@@ -150,6 +172,7 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 
 		if (character != nullptr)
 		{
+			_inTrigArea = false;
 			//inFov = false;
 		}
 	}
