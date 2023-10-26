@@ -54,11 +54,18 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else 
 	{
-		//perhaps have the character spin around slowly before going back into patrol here
-		//so the alert function is to get the enemy to move to last seen location then the spin happens here, either way chasing gets called off as soon as player is out of sight which i dislike
+		//perhaps have the character spin around slowly before going back into patrol here at the end of alert call the spin as i have already made the fvector shit there
 
+		if (inFov) 
+		{
+			Chasing(DeltaTime);
+		}
+		else 
+		{
+			Patrol(DeltaTime);
+		}
 
-		Patrol(DeltaTime);
+		//Patrol(DeltaTime);
 	}
 }
 
