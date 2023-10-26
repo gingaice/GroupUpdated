@@ -59,7 +59,8 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FRotator FacingRotate = FacingVector.Rotation();
 		FQuat QuatRotation = FQuat(FacingRotate);
 		FVector CurLoc = GetActorLocation();
-		
+		FVector _distance;
+		float _floatdist = _distance.Dist(targetVector, CurLoc);
 		FVector MovementVector = targetVector - CurLoc;
 
 		MovementVector.Normalize();
@@ -68,23 +69,21 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
-
-		FVector _distance;
-		float _floatdist = _distance.Dist(targetVector, CurLoc);
-
+		UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), _floatdist);
 
 		if (_floatdist <= 5) 
 		{
-			_CurWaypoint = _CurWaypoint + 1;
+			if ((_CurWaypoint + 1) == ArrWaypoints.Num())
+			{
+				_CurWaypoint = 0;
+			}
+			else 
+			{
+				_CurWaypoint = _CurWaypoint + 1;
+			}
 			//targetVector = ArrWaypoints[0]->GetActorLocation();
-
-			
 		}
 
-		if ((_CurWaypoint + 1) == ArrWaypoints.Num())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("bing bong"));
-		}
 	}
 }
 
