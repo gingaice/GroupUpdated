@@ -41,7 +41,14 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
-	Patrol(DeltaTime);
+	if (inFov) 
+	{
+		Chasing(DeltaTime);
+	}
+	else 
+	{
+		Patrol(DeltaTime);
+	}
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
@@ -69,7 +76,7 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
-		UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), _floatdist);
+		//UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), _floatdist);
 
 		if (_floatdist <= 5) 
 		{
@@ -87,11 +94,64 @@ void AEnemyStates::Patrol(float DeltaTime)
 	}
 }
 
+void AEnemyStates::Chasing(float DeltaTime)
+{
+	//ROTATE TO PLAYER POS
+	FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector FacingVector = NewLocation - GetActorLocation();
+	FRotator FacingRotate = FacingVector.Rotation();
+	FQuat QuatRotation = FQuat(FacingRotate);
+	FVector EnemyLocation = this->GetActorLocation();
+
+	FVector MovementVector = NewLocation - EnemyLocation;
+
+	MovementVector.Normalize();
+	FVector CurLoc = GetActorLocation();
+	float speed = 400.0f;
+
+	FVector Vel = (MovementVector * speed * DeltaTime);
+
+	SetActorLocationAndRotation((CurLoc + Vel), QuatRotation); // caution means looks around near where player is, patrol is waypoints between back and forth for notes for paths?
+
+	//make states - idle standing chasing
+
+	timer = timer - DeltaTime;
+	if (timer <= 0)
+	{
+		Destroy();
+	}
+}
+
 void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor && (OtherActor != this))
+	{
+		character = Cast<AMyProjectCharacter>(OtherActor);
+
+		if (character != nullptr)
+		{
+			DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+
+			if (DotProduct < 0.0f)
+			{
+				inFov = true;
+				//_takeDmg = true;
+			}
+		}
+	}
 }
 
 void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+
+		character = Cast<AMyProjectCharacter>(OtherActor);
+
+		if (character != nullptr)
+		{
+			//inFov = false;
+		}
+	}
 }
 

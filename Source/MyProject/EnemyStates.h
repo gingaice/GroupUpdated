@@ -23,6 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	float DotProduct;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,10 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float SphereRadius;
 
-	bool Movement;
+	bool inFov;
 
-	//UPROPERTY(EditAnywhere, Category = "Waypoints")
-	//class AwayPoints* waypoint1;
+	float timer = 4.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Waypoints")
 	TArray<class AwayPoints*> ArrWaypoints;
@@ -50,6 +50,8 @@ public:
 
 	void Patrol(float DeltaTime);
 	int _CurWaypoint;
+
+	void Chasing(float DeltaTime);
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
