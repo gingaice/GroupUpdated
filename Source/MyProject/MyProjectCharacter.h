@@ -41,13 +41,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 	float health;
-
+	/*
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* MyCollisionSphere;
-
 	UPROPERTY(VisibleAnywhere)
 	float SphereRadius;
-
+	*/
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -88,13 +87,14 @@ protected:
 
 	UPROPERTY()
 	class AMyProjectCharacter* character;
-
+	/* for the mantle sysyem if it gets put back in
 	bool _inAir;
 	bool _mantleClimb;
 	bool _justDone;
 	float _climbTimer = 3.0f;
 	FVector _curMantleUp;
 	void Mantle();
+	*/
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -107,10 +107,11 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
+	/*
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	*/
 };

@@ -49,13 +49,14 @@ AMyProjectCharacter::AMyProjectCharacter()
 
 	health = 10;
 
+	/*
 	SphereRadius = 150.0f;
 
 	MyCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("My Sphere Component"));
 	MyCollisionSphere->InitSphereRadius(SphereRadius);
 	MyCollisionSphere->SetCollisionProfileName("Trigger");
 	MyCollisionSphere->SetupAttachment(RootComponent);
-
+	*/
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -99,16 +100,11 @@ void AMyProjectCharacter::BeginPlay()
 void AMyProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	/* for mantle system if put back in
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AMyProjectCharacter::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AMyProjectCharacter::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-
-	if (IsSprinting)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
-	}
-
+	
 	if (_justDone)
 	{
 		_climbTimer = _climbTimer - DeltaTime;
@@ -122,7 +118,11 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 			_climbTimer = 3.0f;
 		}
 	}
-
+	*/
+	if (IsSprinting)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
+	}
 
 	if (_canCharge)
 	{
@@ -188,10 +188,67 @@ void AMyProjectCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void AMyProjectCharacter::StartSlip()
+{
+	IsInputKeyDown = true;
+}
+
+void AMyProjectCharacter::StopSlip()
+{
+	IsInputKeyDown = false;
+}
+
+void AMyProjectCharacter::StartSprint()
+{
+	UE_LOG(LogTemp, Warning, TEXT("The sprint value is %s"), (IsSprinting ? TEXT("true") : TEXT("false")));
+	GetCharacterMovement()->MaxWalkSpeed = 1900;
+}
+
+void AMyProjectCharacter::StopSprint()
+{
+	UE_LOG(LogTemp, Warning, TEXT("The sprint value is %s"), (IsSprinting ? TEXT("true") : TEXT("false")));
+	GetCharacterMovement()->MaxWalkSpeed = NormalMoveSpeed;
+}
+
+void AMyProjectCharacter::NormJump()
+{
+	float _NormJumpVel = 600.0f;
+
+	if (!IsSuperJump)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Why"));
+		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
+		Jump();
+	}
+	else if (IsSuperJump)
+	{
+		_canCharge = true;
+		//UE_LOG(LogTemp, Warning, TEXT("can charge"));
+
+	}
+}
+
+void AMyProjectCharacter::StopJumping()
+{
+	if (_IsCharged)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("charged"));
+		Jump();
+		_jumpTimer = 2.0f;
+		//GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
+		_IsCharged = false;
+	}
+
+	_canCharge = false;
+	_jumpTimer = 2.0f;
+}
+
+/* for mantly system if put back in
 void AMyProjectCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
+
 		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 		_mantleClimb = true;
 
@@ -245,87 +302,16 @@ void AMyProjectCharacter::Mantle()
 		}
 
 		//MyCollisionSphere->SetSphereRadius(SphereRadius);
-		/*
+
 		_curMantleUp.X = character->GetActorLocation().X;
 		_curMantleUp.Y = character->GetActorLocation().Y + 20;
 		_curMantleUp.Z = character->GetActorLocation().Z;
 		UE_LOG(LogTemp, Warning, TEXT("The X float value is: %f"), _curMantleUp.X);
 		UE_LOG(LogTemp, Warning, TEXT("The Y float value is: %f"), _curMantleUp.Y);
 		UE_LOG(LogTemp, Warning, TEXT("The Z float value is: %f"), _curMantleUp.Z);
-		*/
+
 		//character->SetActorLocation(_curMantleUp);
 	}
 	//MyCollisionSphere->SetSphereRadius(SphereRadius);
 }
-
-void AMyProjectCharacter::StartSlip()
-{
-	IsInputKeyDown = true;
-}
-
-void AMyProjectCharacter::StopSlip()
-{
-	IsInputKeyDown = false;
-}
-
-void AMyProjectCharacter::StartSprint()
-{
-	UE_LOG(LogTemp, Warning, TEXT("The sprint value is %s"), (IsSprinting ? TEXT("true") : TEXT("false")));
-	GetCharacterMovement()->MaxWalkSpeed = 1900;
-}
-
-void AMyProjectCharacter::StopSprint()
-{
-	UE_LOG(LogTemp, Warning, TEXT("The sprint value is %s"), (IsSprinting ? TEXT("true") : TEXT("false")));
-	GetCharacterMovement()->MaxWalkSpeed = NormalMoveSpeed;
-}
-
-void AMyProjectCharacter::NormJump()
-{
-	float _NormJumpVel = 600.0f;
-
-	if (!IsSuperJump)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Why"));
-		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
-		Jump();
-	}
-	else if (IsSuperJump)
-	{
-		_canCharge = true;
-		//UE_LOG(LogTemp, Warning, TEXT("can charge"));
-
-	}
-
-	/*
-	if (!IsSuperJump)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Why"));
-		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
-		Jump();
-
-		//StopSuperJumping();
-	}
-	else if (IsSuperJump)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Super Jump"));
-		GetCharacterMovement()->JumpZVelocity = 1600.f;
-		Jump();
-	}
-	*/
-}
-
-void AMyProjectCharacter::StopJumping()
-{
-	if (_IsCharged)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("charged"));
-		Jump();
-		_jumpTimer = 2.0f;
-		//GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
-		_IsCharged = false;
-	}
-
-	_canCharge = false;
-	_jumpTimer = 2.0f;
-}
+*/
