@@ -40,32 +40,47 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-
+	/*
 	//Hit contains information about what the raycast hit.
 	FHitResult Hit;
-
 	//The length of the ray in units.
 	float RayLength = SphereRadius;
-
 	//The Origin of the raycast
 	FVector StartLocation = GetActorLocation();
-
-	//FVector fovline1 = StartLocation + (GetActorForwardVector() + SphereRadius); //try and get this to be the cone of vision for the enemy and make it a list so jimmy doesnt end you
-
+	 //try and get this to be the cone of vision for the enemy and make it a list so jimmy doesnt end you
 	//The EndLocation of the raycast
 	FVector EndLocation = StartLocation + (GetActorForwardVector() * RayLength);
-
 	//Collision parameters. The following syntax means that we don't want the trace to be complex
 	FCollisionQueryParams CollisionParameters;
-
 	//Perform the line trace
 	//The ECollisionChannel parameter is used in order to determine what we are looking for when performing the raycast
 	ActorLineTraceSingle(Hit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic, CollisionParameters);
-
 	//DrawDebugLine is used in order to see the raycast we performed
 	//The boolean parameter used here means that we want the lines to be persistent so we can see the actual raycast
 	//The last parameter is the width of the lines.
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, true, -1, 0, 1.f);
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, true, -1, 0, 1.f);
+	if (_inTrigArea)
+	{
+		FVector angle = FVector(0, 25, 0);
+		FVector fovline1 = (StartLocation + (GetActorForwardVector() * RayLength));
+		fovline1 = fovline1 + angle;
+		DrawDebugLine(GetWorld(), StartLocation, fovline1, FColor::Blue, true, -1, 0, 1.f);
+		if (inFov)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+			Chasing(DeltaTime);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+			Alert(DeltaTime);
+		}
+	}
+	else
+	{
+		Patrol(DeltaTime);
+	}
+	*/
 
 	/*
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
