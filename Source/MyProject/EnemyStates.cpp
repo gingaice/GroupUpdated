@@ -41,14 +41,56 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
+	//Hit contains information about what the raycast hit.
+	FHitResult Hit;
+
+	//The length of the ray in units.
+	float RayLength = SphereRadius;
+
+	//The Origin of the raycast
+	FVector StartLocation = GetActorLocation();
+
+	//FVector fovline1 = StartLocation + (GetActorForwardVector() + SphereRadius); //try and get this to be the cone of vision for the enemy and make it a list so jimmy doesnt end you
+
+	//The EndLocation of the raycast
+	FVector EndLocation = StartLocation + (GetActorForwardVector() * RayLength);
+
+	//Collision parameters. The following syntax means that we don't want the trace to be complex
+	FCollisionQueryParams CollisionParameters;
+
+	//Perform the line trace
+	//The ECollisionChannel parameter is used in order to determine what we are looking for when performing the raycast
+	ActorLineTraceSingle(Hit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic, CollisionParameters);
+
+	//DrawDebugLine is used in order to see the raycast we performed
+	//The boolean parameter used here means that we want the lines to be persistent so we can see the actual raycast
+	//The last parameter is the width of the lines.
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, true, -1, 0, 1.f);
+
+	/*
+	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
+
 	if (_inTrigArea) 
 	{
+		DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+
+		//dotprod > 0.0 same dir
+		//dotpord == perpendicular
+		//dotprod < 0.0 opposiote
+		UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), DotProduct); //dotprod = where the character is looking not where the characters pos is, use breain to fix this
+		if (DotProduct < 0.0f)
+		{
+			//inFov = true;
+		}
+
 		if (inFov)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
 			Chasing(DeltaTime);
 		}
-		else 
+		else
 		{
+			UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
 			Alert(DeltaTime);
 		}
 	}
@@ -67,6 +109,7 @@ void AEnemyStates::Tick(float DeltaTime)
 
 		//Patrol(DeltaTime);
 	}
+	*/
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
@@ -142,7 +185,7 @@ void AEnemyStates::Chasing(float DeltaTime)
 
 void AEnemyStates::Alert(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
+	//UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
 	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 
 	// _enterpos for the entry point of contact do like go there lol
@@ -161,13 +204,13 @@ void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 			_enterPos = OtherActor->GetActorLocation();
 			_inTrigArea = true;
 
-			DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
 
-			if (DotProduct < 0.0f)
-			{
-				inFov = true;
-				//_takeDmg = true;
-			}
+			//if (DotProduct < 0.0f)
+			//{
+			//	inFov = true;
+			//}
+
 		}
 	}
 }
