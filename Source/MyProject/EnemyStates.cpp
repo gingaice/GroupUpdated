@@ -5,11 +5,13 @@
 #include "Components/SphereComponent.h"
 #include "DrawDebugHelpers.h"
 #include "MyProjectCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyStates::AEnemyStates()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereRadius = 500.0f;
@@ -21,13 +23,18 @@ AEnemyStates::AEnemyStates()
 
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
 	MyMesh->SetupAttachment(RootComponent);
+
+	//character = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	
 }
 
 // Called when the game starts or when spawned
 void AEnemyStates::BeginPlay()
 {
 	Super::BeginPlay();
-	if (ArrWaypoints.Num() >= 2) 
+
+	if (ArrWaypoints.Num() >= 2)
 	{
 		_CurWaypoint = 0;
 	}
@@ -40,31 +47,40 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-	/*
-	//Hit contains information about what the raycast hit.
-	FHitResult Hit;
-	//The length of the ray in units.
-	float RayLength = SphereRadius;
-	//The Origin of the raycast
-	FVector StartLocation = GetActorLocation();
-	 //try and get this to be the cone of vision for the enemy and make it a list so jimmy doesnt end you
-	//The EndLocation of the raycast
-	FVector EndLocation = StartLocation + (GetActorForwardVector() * RayLength);
-	//Collision parameters. The following syntax means that we don't want the trace to be complex
-	FCollisionQueryParams CollisionParameters;
-	//Perform the line trace
-	//The ECollisionChannel parameter is used in order to determine what we are looking for when performing the raycast
-	ActorLineTraceSingle(Hit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldDynamic, CollisionParameters);
-	//DrawDebugLine is used in order to see the raycast we performed
-	//The boolean parameter used here means that we want the lines to be persistent so we can see the actual raycast
-	//The last parameter is the width of the lines.
-	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, true, -1, 0, 1.f);
+
+
+	//UE_LOG(LogTemp, Warning, TEXT("this: %s", character->GetName()));
+	//if (!character)
+	//{
+	//	return;
+	//}
+
+	FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+	FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+
+	float DistanceVectorSize = DistanceVector.Length(); //  |F|
+	float PlayerForwardVectorSize = PlayerForwardVector.Length(); // |D|
+	//check the paint drawing for comment explain
+
+	auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector);
+	float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize);
+
+	float Radius = SphereRadius;
+
 	if (_inTrigArea)
 	{
-		FVector angle = FVector(0, 25, 0);
-		FVector fovline1 = (StartLocation + (GetActorForwardVector() * RayLength));
-		fovline1 = fovline1 + angle;
-		DrawDebugLine(GetWorld(), StartLocation, fovline1, FColor::Blue, true, -1, 0, 1.f);
+		//dotprod > 0.0 same dir
+		//dotpord == perpendicular
+		//dotprod < 0.0 opposiote
+
+		if ((DotProductResult < 0.4f) + (DistanceVectorSize <= Radius))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+
+			//inFov = true;
+			//FMath::Acos(45.0F);
+		}
+
 		if (inFov)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
@@ -78,63 +94,67 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else
 	{
-		Patrol(DeltaTime);
-	}
-	*/
-
-	/*
-	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-
-	if (_inTrigArea) 
-	{
-		DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
-
-		//dotprod > 0.0 same dir
-		//dotpord == perpendicular
-		//dotprod < 0.0 opposiote
-		UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), DotProduct); //dotprod = where the character is looking not where the characters pos is, use breain to fix this
-		if (DotProduct < 0.0f)
-		{
-			//inFov = true;
-		}
+		//perhaps have the character spin around slowly before going back into patrol here at the end of alert call the spin as i have already made the fvector shit there
 
 		if (inFov)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
 			Chasing(DeltaTime);
 		}
 		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-			Alert(DeltaTime);
-		}
-	}
-	else 
-	{
-		//perhaps have the character spin around slowly before going back into patrol here at the end of alert call the spin as i have already made the fvector shit there
-
-		if (inFov) 
-		{
-			Chasing(DeltaTime);
-		}
-		else 
 		{
 			Patrol(DeltaTime);
 		}
 
 		//Patrol(DeltaTime);
 	}
-	*/
+	/*
+//The length of the ray in units.
+float RayLength = SphereRadius;
+//The Origin of the raycast
+FVector StartLocation = GetActorLocation();
+
+FVector fovline1 = (StartLocation + (GetActorRightVector() * RayLength));
+FVector fovline2 = (StartLocation - (GetActorRightVector() * RayLength));
+
+double angle = UKismetMathLibrary::Vector_CosineAngle2D(fovline1, fovline2);
+
+DrawDebugLine(GetWorld(), StartLocation, fovline1, FColor::Blue, false, -1, 0, 1.f);
+DrawDebugLine(GetWorld(), StartLocation, fovline2, FColor::Blue, false, -1, 0, 1.f);
+
+if (_inTrigArea)
+{
+
+
+	UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), angle);
+
+
+
+	if (inFov)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+		Chasing(DeltaTime);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+		Alert(DeltaTime);
+	}
+}
+else
+{
+	Patrol(DeltaTime);
+}
+*/
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
 {
 
-	if (ArrWaypoints.IsEmpty()) 
+	if (ArrWaypoints.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bing bong"));
+		UE_LOG(LogTemp, Warning, TEXT("NO THINGIES"));
 	}
-	else 
+	else
 	{
 		FVector targetVector = ArrWaypoints[_CurWaypoint]->GetActorLocation();
 
@@ -154,13 +174,13 @@ void AEnemyStates::Patrol(float DeltaTime)
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
 		//UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), _floatdist);
 
-		if (_floatdist <= 5) 
+		if (_floatdist <= 5)
 		{
 			if ((_CurWaypoint + 1) == ArrWaypoints.Num())
 			{
 				_CurWaypoint = 0;
 			}
-			else 
+			else
 			{
 				_CurWaypoint = _CurWaypoint + 1;
 			}
@@ -216,7 +236,6 @@ void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 
 		if (character != nullptr)
 		{
-			_enterPos = OtherActor->GetActorLocation();
 			_inTrigArea = true;
 
 			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
@@ -244,4 +263,3 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		}
 	}
 }
-
