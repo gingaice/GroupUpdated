@@ -96,7 +96,7 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
 
 
-			for (int i = 0; i < 6; i++) 
+			for (int i = 0; i < 3; i++) 
 			{
 				spawnAnEnemy();
 
@@ -105,7 +105,7 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			Destroy();
 		}
 		 //WORKING CODE JUST DELETE COMMENTS AS ITS FOR SUPER JUMP TESTING FOR SHRINK PLAYERa 
-		/*
+		/* MAKE INTERFACE SO IT CHANGES EASIER/ STATE MACHINE TYPE SHIT
 		FVector scale = character->GetActorScale3D();
 		if (OtherActor == character)
 		{
