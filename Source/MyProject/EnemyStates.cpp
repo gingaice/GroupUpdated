@@ -3,6 +3,7 @@
 
 #include "EnemyStates.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
 #include "MyProjectCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -20,6 +21,11 @@ AEnemyStates::AEnemyStates()
 	MyCollisionSphere->InitSphereRadius(SphereRadius);
 	MyCollisionSphere->SetCollisionProfileName("Trigger");
 	RootComponent = MyCollisionSphere;
+
+	MyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("My Box Component"));
+	MyCollisionBox->InitBoxExtent(FVector(500,100,10));
+	MyCollisionBox->SetCollisionProfileName("Trigger");
+	MyCollisionBox->SetupAttachment(RootComponent);
 
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
 	MyMesh->SetupAttachment(RootComponent);
@@ -46,15 +52,10 @@ void AEnemyStates::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
+	MyCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBeginBox);
+	MyCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEndBox);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-
-
-	//UE_LOG(LogTemp, Warning, TEXT("this: %s", character->GetName()));
-	//if (!character)
-	//{
-	//	return;
-	//}
-
+	/*
 	float Radius = SphereRadius;
 
 	if (_inTrigArea)
@@ -130,44 +131,34 @@ void AEnemyStates::Tick(float DeltaTime)
 
 		//Patrol(DeltaTime);
 	}
-	/*
-//The length of the ray in units.
-float RayLength = SphereRadius;
-//The Origin of the raycast
-FVector StartLocation = GetActorLocation();
+	*/
 
-FVector fovline1 = (StartLocation + (GetActorRightVector() * RayLength));
-FVector fovline2 = (StartLocation - (GetActorRightVector() * RayLength));
-
-double angle = UKismetMathLibrary::Vector_CosineAngle2D(fovline1, fovline2);
-
-DrawDebugLine(GetWorld(), StartLocation, fovline1, FColor::Blue, false, -1, 0, 1.f);
-DrawDebugLine(GetWorld(), StartLocation, fovline2, FColor::Blue, false, -1, 0, 1.f);
-
-if (_inTrigArea)
-{
-
-
-	UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), angle);
-
-
-
-	if (inFov)
+	if (_inTrigArea)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-		Chasing(DeltaTime);
+		UE_LOG(LogTemp, Warning, TEXT("intrig"));
+		if (_inBoxTrigArea)
+		{
+			inFov = true;
+
+			UE_LOG(LogTemp, Warning, TEXT("inboxtrig"));
+			if (inFov)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+				Chasing(DeltaTime);
+			}
+			else
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+				Alert(DeltaTime);
+			}
+		}
+
+		//UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), angle);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-		Alert(DeltaTime);
+		Patrol(DeltaTime);
 	}
-}
-else
-{
-	Patrol(DeltaTime);
-}
-*/
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
@@ -282,6 +273,42 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		if (character != nullptr)
 		{
 			_inTrigArea = false;
+			//inFov = false;
+		}
+	}
+}
+
+void AEnemyStates::OnOverlapBeginBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && (OtherActor != this))
+	{
+		character = Cast<AMyProjectCharacter>(OtherActor);
+
+		if (character != nullptr)
+		{
+			_inBoxTrigArea = true;
+
+			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
+
+			//if (DotProduct < 0.0f)
+			//{
+			//	inFov = true;
+			//}
+
+		}
+	}
+}
+
+void AEnemyStates::OnOverlapEndBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+
+		character = Cast<AMyProjectCharacter>(OtherActor);
+
+		if (character != nullptr)
+		{
+			_inBoxTrigArea = false;
 			//inFov = false;
 		}
 	}
