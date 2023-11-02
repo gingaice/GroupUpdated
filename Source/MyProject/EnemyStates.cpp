@@ -55,16 +55,6 @@ void AEnemyStates::Tick(float DeltaTime)
 	//	return;
 	//}
 
-	FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
-	FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
-
-	float DistanceVectorSize = DistanceVector.Length(); //  |F|
-	float PlayerForwardVectorSize = PlayerForwardVector.Length(); // |D|
-	//check the paint drawing for comment explain
-
-	auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector);
-	float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize);
-
 	float Radius = SphereRadius;
 
 	if (_inTrigArea)
@@ -73,13 +63,46 @@ void AEnemyStates::Tick(float DeltaTime)
 		//dotpord == perpendicular
 		//dotprod < 0.0 opposiote
 
-		if ((DotProductResult < 0.4f) + (DistanceVectorSize <= Radius))
+		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+		//FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+
+		//float DistanceVectorSize = DistanceVector.Length(); //  |F|
+		//float PlayerForwardVectorSize = PlayerForwardVector.Length(); // |D|
+		////check the paint drawing for comment explain
+
+		//auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d
+		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
+
+		FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+		FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+		float DistanceVectorSize = DistanceVector.Length(); //  |F|
+		PlayerForwardVector.Normalize();
+		DistanceVector.Normalize(); // |D|
+
+
+		auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d
+
+		float _AngleRadian = FMath::Acos(DotProductResult);
+
+		float AngleDegree = FMath::RadiansToDegrees(_AngleRadian);
+
+		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
+		UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), AngleDegree);
+		if ((DotProductResult < 0.0f) && (DistanceVectorSize <= AngleDegree))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 
 			//inFov = true;
 			//FMath::Acos(45.0F);
 		}
+
+		//if ((DotProductResult < 0.0f) && (DistanceVectorSize <= theta))
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+
+		//	//inFov = true;
+		//	//FMath::Acos(45.0F);
+		//}
 
 		if (inFov)
 		{
