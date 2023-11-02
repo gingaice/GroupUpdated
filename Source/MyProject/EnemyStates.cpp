@@ -27,9 +27,11 @@ AEnemyStates::AEnemyStates()
 	MyCollisionBox->SetCollisionProfileName("Trigger");
 	MyCollisionBox->SetupAttachment(RootComponent);
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'")); 
+	UStaticMesh* Asset = MeshAsset.Object;
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
 	MyMesh->SetupAttachment(RootComponent);
-
+	MyMesh->SetStaticMesh(Asset);
 	//character = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
 	
@@ -155,7 +157,15 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else
 	{
-		Patrol(DeltaTime);
+
+		if (inFov)
+		{
+			Chasing(DeltaTime);
+		}
+		else
+		{
+			Patrol(DeltaTime);
+		}
 	}
 }
 
