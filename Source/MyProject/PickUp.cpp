@@ -4,6 +4,10 @@
 #include "PickUp.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
+
+#include "EnemyStates.h"
+#include "Kismet/KismetMathLibrary.h"	//for random in vol
+
 //#include "MyCharacterTest.h"
 #include "MyProjectCharacter.h"
 
@@ -12,6 +16,12 @@ APickUp::APickUp()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Create a Box for the spawn volume.
+	whereToSpawn = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	whereToSpawn->SetBoxExtent(FVector(1000.0, 500.0, 20.0));
+	whereToSpawn->SetupAttachment(RootComponent);
+
 
 	SphereRadius = 100.0f;
 
@@ -27,6 +37,27 @@ APickUp::APickUp()
 
 }
 
+void APickUp::spawnAnEnemy()
+{
+	if (GetWorld())
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		spawnParams.Instigator = GetInstigator();
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		FVector spawnLoc = getRandomPtInVolume();
+		FRotator rot = FRotator::ZeroRotator;
+		GetWorld()->SpawnActor<AEnemyStates>(AEnemyStates::StaticClass(), spawnLoc, rot, spawnParams);
+	}
+}
+
+FVector APickUp::getRandomPtInVolume()
+{
+	FVector spawnOrigin = whereToSpawn->Bounds.Origin;
+	FVector spawnExtent = whereToSpawn->Bounds.BoxExtent;
+	return UKismetMathLibrary::RandomPointInBoundingBox(spawnOrigin, spawnExtent);
+}
 // Called when the game starts or when spawned
 void APickUp::BeginPlay()
 {
@@ -63,6 +94,13 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 			character->IsSuperJump = true;
 
 			UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
+
+
+			for (int i = 0; i < 6; i++) 
+			{
+				spawnAnEnemy();
+
+			}
 
 			Destroy();
 		}

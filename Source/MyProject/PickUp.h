@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "PickUp.generated.h"
 
 class USphereComponent;
@@ -14,6 +15,12 @@ class MYPROJECT_API APickUp : public AActor
 	GENERATED_BODY()
 public:
 	APickUp();
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* whereToSpawn;
+
+	FVector getRandomPtInVolume();
+	void spawnAnEnemy();
 
 protected:
 
