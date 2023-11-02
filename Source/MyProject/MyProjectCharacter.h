@@ -68,10 +68,6 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	void StartSlip();
-	bool IsInputKeyDown;
-	void StopSlip();
-
 	void StartSprint();
 	bool IsSprinting;
 	void StopSprint();

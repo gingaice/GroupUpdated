@@ -188,16 +188,6 @@ void AMyProjectCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void AMyProjectCharacter::StartSlip()
-{
-	IsInputKeyDown = true;
-}
-
-void AMyProjectCharacter::StopSlip()
-{
-	IsInputKeyDown = false;
-}
-
 void AMyProjectCharacter::StartSprint()
 {
 	UE_LOG(LogTemp, Warning, TEXT("The sprint value is %s"), (IsSprinting ? TEXT("true") : TEXT("false")));

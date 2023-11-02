@@ -23,9 +23,10 @@ AEnemyStates::AEnemyStates()
 	RootComponent = MyCollisionSphere;
 
 	MyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("My Box Component"));
-	MyCollisionBox->InitBoxExtent(FVector(500,100,10));
+	MyCollisionBox->InitBoxExtent(FVector(300,100,10));
 	MyCollisionBox->SetCollisionProfileName("Trigger");
 	MyCollisionBox->SetupAttachment(RootComponent);
+	MyCollisionBox->SetRelativeLocation(FVector(250, 0, 0));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'")); 
 	UStaticMesh* Asset = MeshAsset.Object;
