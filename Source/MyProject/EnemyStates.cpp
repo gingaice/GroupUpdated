@@ -136,6 +136,9 @@ void AEnemyStates::Tick(float DeltaTime)
 	if (_inTrigArea)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("intrig"));
+
+		Alert(DeltaTime);
+
 		if (_inBoxTrigArea)
 		{
 			inFov = true;
@@ -145,11 +148,6 @@ void AEnemyStates::Tick(float DeltaTime)
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
 				Chasing(DeltaTime);
-			}
-			else
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-				Alert(DeltaTime);
 			}
 		}
 
@@ -236,9 +234,8 @@ void AEnemyStates::Alert(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
 	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-
+	FVector LastSeen = character->GetActorForwardVector();
 	// _enterpos for the entry point of contact do like go there lol
-
 	//find a way to spin the player before moving them that way
 }
 
