@@ -70,4 +70,11 @@ public:
 	void OnOverlapEndBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
+	float PitchValue;
+	UPROPERTY(EditAnywhere, Category = Movement)
+	float YawValue;
+	float RollValue;
+
+	FVector _enterPos;
+	//FRotator _enterRotation; i was thinking for it to be like, the place you enter it spins until it hits thtat on the rotation
 };

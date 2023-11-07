@@ -34,7 +34,9 @@ AEnemyStates::AEnemyStates()
 	MyMesh->SetupAttachment(RootComponent);
 	MyMesh->SetStaticMesh(Asset);
 	//character = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
+	PitchValue = 0.f;
+	YawValue = 0.f;
+	RollValue = 0.f;
 	
 }
 
@@ -243,6 +245,17 @@ void AEnemyStates::Chasing(float DeltaTime)
 
 void AEnemyStates::Alert(float DeltaTime)
 {
+	if (GetActorForwardVector() == _enterPos) 
+	{
+		Patrol(DeltaTime);
+	}
+
+	FRotator NewRotation = FRotator(PitchValue, YawValue, RollValue);
+
+	FQuat QuatRotation = FQuat(NewRotation);
+
+	AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
+
 	//UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
 	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	//FVector LastSeen = character->GetActorForwardVector();
@@ -259,7 +272,8 @@ void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 		if (character != nullptr)
 		{
 			_inTrigArea = true;
-
+			_enterPos = OtherActor->GetActorLocation();
+			//_enterRotation = GetActorRotation();
 			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
 
 			//if (DotProduct < 0.0f)
