@@ -42,6 +42,7 @@ public:
 
 	bool inFov;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float timer = 5.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Waypoints")

@@ -178,6 +178,29 @@ void AEnemyStates::Patrol(float DeltaTime)
 	if (ArrWaypoints.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO THINGIES"));
+
+		FVector targetVector = GetActorForwardVector();
+
+		FVector FacingVector = targetVector - GetActorLocation();
+		FRotator FacingRotate = FacingVector.Rotation();
+		FQuat QuatRotation = FQuat(FacingRotate);
+		FVector CurLoc = GetActorLocation();
+		FVector _distance;
+		float _floatdist = _distance.Dist(targetVector, CurLoc);
+		FVector MovementVector = targetVector - CurLoc;
+
+		MovementVector.Normalize();
+		float speed = 400.0f;
+
+		FVector Vel = (MovementVector * speed * DeltaTime);
+
+		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
+
+		timer = timer - DeltaTime;
+		if (timer <= 0)
+		{
+			Destroy();
+		}
 	}
 	else
 	{
@@ -245,22 +268,12 @@ void AEnemyStates::Chasing(float DeltaTime)
 
 void AEnemyStates::Alert(float DeltaTime)
 {
-	if (GetActorForwardVector() == _enterPos) 
-	{
-		Patrol(DeltaTime);
-	}
-
 	FRotator NewRotation = FRotator(PitchValue, YawValue, RollValue);
 
 	FQuat QuatRotation = FQuat(NewRotation);
 
 	AddActorLocalRotation(QuatRotation, false, 0, ETeleportType::None);
-
-	//UE_LOG(LogTemp, Warning, TEXT("bing bongers"));
-	//FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	//FVector LastSeen = character->GetActorForwardVector();
-	// _enterpos for the entry point of contact do like go there lol
-	//find a way to spin the player before moving them that way
+	YawValue += DeltaTime;
 }
 
 void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
