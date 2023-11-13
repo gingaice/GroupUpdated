@@ -81,8 +81,10 @@ void AEnemyStates::Tick(float DeltaTime)
 		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
 		FVector EnemyForwardVector = GetActorForwardVector();
 		//FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
-		FVector DistanceVector = GetActorForwardVector() - character->GetActorLocation(); //	D
+		FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
+
 		float DistanceVectorSize = DistanceVector.Length(); //  |F|
+
 		EnemyForwardVector.Normalize();
 		//PlayerForwardVector.Normalize();
 		DistanceVector.Normalize(); // |D|
@@ -100,7 +102,7 @@ void AEnemyStates::Tick(float DeltaTime)
 		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		//}		
 		
-		if ((DotProductResult <= 0.5) && (DotProductResult >= 1)) // get rid of distance vector check on angle and dot prod should do its job and work
+		if ((DotProductResult >= 0.6)) // get rid of distance vector check on angle and dot prod should do its job and work
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		}
@@ -120,23 +122,23 @@ void AEnemyStates::Tick(float DeltaTime)
 			//	Chasing(DeltaTime);
 			//}
 
-			Chasing(DeltaTime);
+			//Chasing(DeltaTime);
 		}
 		else
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-			Alert(DeltaTime);
+			//Alert(DeltaTime);
 		}
 	}
 	else
 	{
 		if (inFov)
 		{
-			Chasing(DeltaTime);
+			//Chasing(DeltaTime);
 		}
 		else
 		{
-			Patrol(DeltaTime);
+			//Patrol(DeltaTime);
 		}
 	}
 	
@@ -192,9 +194,8 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector _distance;
 		float _floatdist = _distance.Dist(targetVector, CurLoc);
 		FVector MovementVector = targetVector - CurLoc;
-
 		MovementVector.Normalize();
-		float speed = 400.0f;
+
 
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
@@ -219,7 +220,6 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector MovementVector = targetVector - CurLoc;
 
 		MovementVector.Normalize();
-		float speed = 400.0f;
 
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
@@ -254,7 +254,6 @@ void AEnemyStates::Chasing(float DeltaTime)
 
 	MovementVector.Normalize();
 	FVector CurLoc = GetActorLocation();
-	float speed = 400.0f;
 
 	FVector Vel = (MovementVector * speed * DeltaTime);
 

@@ -27,6 +27,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool IsSuperJump;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideEffect)
+	float _jump = 1600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideEffect)
+	float _sprint = 1900.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SideEffect)
+	float _slip;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
@@ -37,9 +46,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 	float health;
-
-	UPROPERTY(EditAnywhere)
-	float _slip;
 
 protected:
 	// Called when the game starts or when spawned

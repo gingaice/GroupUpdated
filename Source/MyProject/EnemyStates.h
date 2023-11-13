@@ -19,6 +19,9 @@ public:
 	// Sets default values for this actor's properties
 	AEnemyStates();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = EnemyStuff)
+	float speed = 400.0f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
