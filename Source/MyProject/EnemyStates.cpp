@@ -130,14 +130,14 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else
 	{
-		//if (inFov)
-		//{
-		//	Chasing(DeltaTime);
-		//}
-		//else
-		//{
-		//	Patrol(DeltaTime);
-		//}
+		if (inFov)
+		{
+			Chasing(DeltaTime);
+		}
+		else
+		{
+			Patrol(DeltaTime);
+		}
 	}
 	
 	/*
@@ -224,7 +224,6 @@ void AEnemyStates::Patrol(float DeltaTime)
 		FVector Vel = (MovementVector * speed * DeltaTime);
 
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
-		//UE_LOG(LogTemp, Warning, TEXT("bing bong: %f"), _floatdist);
 
 		if (_floatdist <= 5)
 		{
@@ -290,14 +289,6 @@ void AEnemyStates::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 		{
 			_inTrigArea = true;
 			_enterPos = OtherActor->GetActorLocation();
-			//_enterRotation = GetActorRotation();
-			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
-
-			//if (DotProduct < 0.0f)
-			//{
-			//	inFov = true;
-			//}
-
 		}
 	}
 }
@@ -312,7 +303,6 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		if (character != nullptr)
 		{
 			_inTrigArea = false;
-			//inFov = false;
 		}
 	}
 }
@@ -326,14 +316,6 @@ void AEnemyStates::OnOverlapBeginBox(UPrimitiveComponent* OverlappedComp, AActor
 		if (character != nullptr)
 		{
 			_inBoxTrigArea = true;
-
-			//DotProduct = FVector::DotProduct(character->GetActorForwardVector(), GetActorForwardVector());
-
-			//if (DotProduct < 0.0f)
-			//{
-			//	inFov = true;
-			//}
-
 		}
 	}
 }
@@ -348,7 +330,6 @@ void AEnemyStates::OnOverlapEndBox(UPrimitiveComponent* OverlappedComp, AActor* 
 		if (character != nullptr)
 		{
 			_inBoxTrigArea = false;
-			//inFov = false;
 		}
 	}
 }

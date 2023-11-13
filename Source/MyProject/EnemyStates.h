@@ -77,5 +77,4 @@ public:
 	float RollValue;
 
 	FVector _enterPos;
-	//FRotator _enterRotation; i was thinking for it to be like, the place you enter it spins until it hits thtat on the rotation
 };

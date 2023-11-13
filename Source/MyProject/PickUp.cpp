@@ -61,8 +61,6 @@ FVector APickUp::getRandomPtInVolume()
 void APickUp::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//DrawDebugBox(GetWorld(), GetActorLocation(), GetActorScale() * 100, FColor::Purple, true, -1, 0, 5);
 }
 
 // Called every frame
@@ -89,7 +87,7 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 				character->_slip = 500;
 
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < EnemyAmountSpawn; i++)
 				{
 					spawnAnEnemy();
 
@@ -100,18 +98,11 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 			if (ActorHasTag("Jump"))
 			{
-				//IsSuperJump = true;
-				UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
-
-				//character->IsSuperJump = true;
-					//AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
-
 				character->IsSuperJump = true;
 
 				UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
 
-
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < EnemyAmountSpawn; i++)
 				{
 					spawnAnEnemy();
 
@@ -127,7 +118,7 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 				character->SetActorScale3D(scale * 0.4f);
 
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < EnemyAmountSpawn; i++)
 				{
 					spawnAnEnemy();
 

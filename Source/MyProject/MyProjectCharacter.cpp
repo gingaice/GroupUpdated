@@ -208,15 +208,12 @@ void AMyProjectCharacter::NormJump()
 
 	if (!IsSuperJump)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Why"));
 		GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
 		Jump();
 	}
 	else if (IsSuperJump)
 	{
 		_canCharge = true;
-		//UE_LOG(LogTemp, Warning, TEXT("can charge"));
-
 	}
 }
 
@@ -227,7 +224,6 @@ void AMyProjectCharacter::StopJumping()
 		UE_LOG(LogTemp, Warning, TEXT("charged"));
 		Jump();
 		_jumpTimer = 2.0f;
-		//GetCharacterMovement()->JumpZVelocity = _NormJumpVel;
 		_IsCharged = false;
 	}
 
