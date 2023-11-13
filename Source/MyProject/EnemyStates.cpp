@@ -61,7 +61,7 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEndBox);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
-	/*
+	
 	if (_inTrigArea)
 	{
 		//dotprod > 0.0 same dir
@@ -80,42 +80,40 @@ void AEnemyStates::Tick(float DeltaTime)
 
 		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
 		FVector EnemyForwardVector = GetActorForwardVector();
-		FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+		//FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+		FVector DistanceVector = GetActorForwardVector() - character->GetActorLocation(); //	D
 		float DistanceVectorSize = DistanceVector.Length(); //  |F|
 		EnemyForwardVector.Normalize();
 		//PlayerForwardVector.Normalize();
 		DistanceVector.Normalize(); // |D|
-
 
 		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d  //change playerforward to enemyforward
 
 		//float _AngleRadian = FMath::Acos(DotProductResult);
 
 		//float AngleDegree = FMath::RadiansToDegrees(_AngleRadian);
-		
 		 // ignore angle for now try using dot product, if dot < 0 should be in 90 forwards
-
 		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
-		//UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), AngleDegree);
+		UE_LOG(LogTemp, Warning, TEXT("dotprdo:  %f"), DotProductResult);
 		//if ((DotProductResult > 0.0f) && (DistanceVectorSize <= AngleDegree)) // get rid of distance vector check on angle and dot prod should do its job and work
 		//{
 		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		//}		
 		
-		if ((DotProductResult < 0.0f)) // get rid of distance vector check on angle and dot prod should do its job and work
+		if ((DotProductResult < -0.60f) && (DotProductResult > -0.85)) // get rid of distance vector check on angle and dot prod should do its job and work
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		}
 
 		if (inFov)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-			Chasing(DeltaTime);
+			//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+			//Chasing(DeltaTime);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-			Alert(DeltaTime);
+			//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+			//Alert(DeltaTime);
 		}
 	}
 	else
@@ -124,17 +122,15 @@ void AEnemyStates::Tick(float DeltaTime)
 
 		if (inFov)
 		{
-			Chasing(DeltaTime);
+			//Chasing(DeltaTime);
 		}
 		else
 		{
-			Patrol(DeltaTime);
+			//Patrol(DeltaTime);
 		}
-
-		//Patrol(DeltaTime);
 	}
-	*/
 	
+	/*
 	if (_inTrigArea)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("intrig"));
@@ -167,7 +163,7 @@ void AEnemyStates::Tick(float DeltaTime)
 			Patrol(DeltaTime);
 		}
 	}
-	
+	*/
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
