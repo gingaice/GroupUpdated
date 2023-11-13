@@ -27,10 +27,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool IsSuperJump;
 
-
-	UPROPERTY(VisibleAnywhere)
-	bool test = false;
-
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
@@ -41,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 	float health;
+
+	UPROPERTY(EditAnywhere)
+	float _slip;
 	/*
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* MyCollisionSphere;
@@ -80,6 +79,7 @@ protected:
 	bool _IsCharged = false;
 	float _jumpTimer = 2.0f;
 
+	void StartSlip();
 
 	UPROPERTY()
 	class AMyProjectCharacter* character;

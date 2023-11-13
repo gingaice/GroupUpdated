@@ -86,15 +86,15 @@ void AEnemyStates::Tick(float DeltaTime)
 		DistanceVector.Normalize(); // |D|
 
 
-		auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d
+		auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d  //change playerforward to enemyforward
 
 		float _AngleRadian = FMath::Acos(DotProductResult);
 
-		float AngleDegree = FMath::RadiansToDegrees(_AngleRadian);
+		float AngleDegree = FMath::RadiansToDegrees(_AngleRadian); // ignore angle for now try using dot product, if dot < 0 should be in 90 forwards
 
 		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
 		UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), AngleDegree);
-		if ((DotProductResult < 0.0f) && (DistanceVectorSize <= AngleDegree))
+		if ((DotProductResult > 0.0f) && (DistanceVectorSize <= AngleDegree)) // get rid of distance vector check on angle and dot prod should do its job and work
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 

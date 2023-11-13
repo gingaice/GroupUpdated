@@ -4,12 +4,11 @@
 #include "PickUp.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
-
+#include "MyProjectCharacter.h"
 #include "EnemyStates.h"
 #include "Kismet/KismetMathLibrary.h"	//for random in vol
 
 //#include "MyCharacterTest.h"
-#include "MyProjectCharacter.h"
 
 // Sets default values
 APickUp::APickUp()
@@ -81,40 +80,61 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	if (OtherActor && (OtherActor != this))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AnObjectIn"));
-		
-		//AMyCharacterTest* character = Cast<AMyCharacterTest>(OtherActor);
+
 		if (OtherActor == character)
 		{
-		//IsSuperJump = true;
-		UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
-
-		//character->IsSuperJump = true;
-			//AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
-
-			character->IsSuperJump = true;
-
-			UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
-
-
-			for (int i = 0; i < 3; i++) 
+			if (ActorHasTag("Slip")) 
 			{
-				spawnAnEnemy();
+				UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 
+				character->_slip = 500;
+
+				for (int i = 0; i < 3; i++)
+				{
+					spawnAnEnemy();
+
+				}
+
+				Destroy();
 			}
 
-			Destroy();
-		}
-		 //WORKING CODE JUST DELETE COMMENTS AS ITS FOR SUPER JUMP TESTING FOR SHRINK PLAYERa 
-		/* MAKE INTERFACE SO IT CHANGES EASIER/ STATE MACHINE TYPE SHIT
-		FVector scale = character->GetActorScale3D();
-		if (OtherActor == character)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
+			if (ActorHasTag("Jump"))
+			{
+				//IsSuperJump = true;
+				UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
 
-			character->SetActorScale3D(scale * 0.4f);
+				//character->IsSuperJump = true;
+					//AMyProjectCharacter* character = Cast<AMyProjectCharacter>(OtherActor);
 
-			Destroy();
+				character->IsSuperJump = true;
+
+				UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
+
+
+				for (int i = 0; i < 3; i++)
+				{
+					spawnAnEnemy();
+
+				}
+
+				Destroy();
+			}			
+			
+			if (ActorHasTag("Small"))
+			{
+				FVector scale = character->GetActorScale3D();
+				UE_LOG(LogTemp, Warning, TEXT("other fella is : %s"), *OtherActor->GetName());
+
+				character->SetActorScale3D(scale * 0.4f);
+
+				for (int i = 0; i < 3; i++)
+				{
+					spawnAnEnemy();
+
+				}
+
+				Destroy();
+			}
 		}
-		*/
 	}
 }

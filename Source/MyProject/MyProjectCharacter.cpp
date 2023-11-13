@@ -48,7 +48,7 @@ AMyProjectCharacter::AMyProjectCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	health = 10;
-
+	_slip = 2048.0f;
 	/*
 	SphereRadius = 150.0f;
 
@@ -85,8 +85,8 @@ void AMyProjectCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMyProjectCharacter::LookUpAtRate);
 
 	// handle touch devices
-	//PlayerInputComponent->BindTouch(IE_Pressed, this, &AMyCharacterTest::TouchStarted);
-	//PlayerInputComponent->BindTouch(IE_Released, this, &AMyCharacterTest::TouchStopped);
+	//PlayerInputComponent->BindTouch(IE_Pressed, this, &AMyProjectCharacter::StartSlip);
+	//PlayerInputComponent->BindTouch(IE_Released, this, &AMyCharacterTest::StopSlip);
 }
 
 
@@ -119,6 +119,8 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 		}
 	}
 	*/
+	StartSlip();
+
 	if (IsSprinting)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("The float value is: %f"), GetCharacterMovement()->MaxWalkSpeed);
@@ -231,6 +233,11 @@ void AMyProjectCharacter::StopJumping()
 
 	_canCharge = false;
 	_jumpTimer = 2.0f;
+}
+
+void AMyProjectCharacter::StartSlip()
+{
+	GetCharacterMovement()->BrakingDecelerationWalking = _slip;
 }
 
 /* for mantly system if put back in
