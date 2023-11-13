@@ -60,9 +60,8 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBeginBox);
 	MyCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEndBox);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-	/*
-	float Radius = SphereRadius;
 
+	/*
 	if (_inTrigArea)
 	{
 		//dotprod > 0.0 same dir
@@ -79,36 +78,34 @@ void AEnemyStates::Tick(float DeltaTime)
 		//auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d
 		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
 
-		FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+		FVector EnemyForwardVector = GetActorForwardVector();
 		FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
 		float DistanceVectorSize = DistanceVector.Length(); //  |F|
-		PlayerForwardVector.Normalize();
+		EnemyForwardVector.Normalize();
+		//PlayerForwardVector.Normalize();
 		DistanceVector.Normalize(); // |D|
 
 
-		auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d  //change playerforward to enemyforward
+		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d  //change playerforward to enemyforward
 
-		float _AngleRadian = FMath::Acos(DotProductResult);
+		//float _AngleRadian = FMath::Acos(DotProductResult);
 
-		float AngleDegree = FMath::RadiansToDegrees(_AngleRadian); // ignore angle for now try using dot product, if dot < 0 should be in 90 forwards
+		//float AngleDegree = FMath::RadiansToDegrees(_AngleRadian);
+		
+		 // ignore angle for now try using dot product, if dot < 0 should be in 90 forwards
 
 		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
-		UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), AngleDegree);
-		if ((DotProductResult > 0.0f) && (DistanceVectorSize <= AngleDegree)) // get rid of distance vector check on angle and dot prod should do its job and work
-		{
-			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
-
-			//inFov = true;
-			//FMath::Acos(45.0F);
-		}
-
-		//if ((DotProductResult < 0.0f) && (DistanceVectorSize <= theta))
+		//UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), AngleDegree);
+		//if ((DotProductResult > 0.0f) && (DistanceVectorSize <= AngleDegree)) // get rid of distance vector check on angle and dot prod should do its job and work
 		//{
 		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
-
-		//	//inFov = true;
-		//	//FMath::Acos(45.0F);
-		//}
+		//}		
+		
+		if ((DotProductResult < 0.0f)) // get rid of distance vector check on angle and dot prod should do its job and work
+		{
+			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+		}
 
 		if (inFov)
 		{
@@ -137,7 +134,7 @@ void AEnemyStates::Tick(float DeltaTime)
 		//Patrol(DeltaTime);
 	}
 	*/
-
+	
 	if (_inTrigArea)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("intrig"));
@@ -170,6 +167,7 @@ void AEnemyStates::Tick(float DeltaTime)
 			Patrol(DeltaTime);
 		}
 	}
+	
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
