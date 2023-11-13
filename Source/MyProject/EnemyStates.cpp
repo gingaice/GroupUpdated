@@ -100,7 +100,7 @@ void AEnemyStates::Tick(float DeltaTime)
 		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		//}		
 		
-		if ((DotProductResult < -0.60f) && (DotProductResult > -0.85)) // get rid of distance vector check on angle and dot prod should do its job and work
+		if ((DotProductResult <= 0.5) && (DotProductResult >= 1)) // get rid of distance vector check on angle and dot prod should do its job and work
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
 		}
@@ -108,26 +108,36 @@ void AEnemyStates::Tick(float DeltaTime)
 		if (inFov)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-			//Chasing(DeltaTime);
+			//FVector targetVector = GetActorForwardVector();
+			//FVector FacingVector = targetVector - GetActorLocation();
+			//FRotator FacingRotate = FacingVector.Rotation();
+			//FQuat QuatRotation = FQuat(FacingRotate);
+
+			//float reactionTime = 2.0f;
+			//reactionTime--;
+			//if (reactionTime <= 0) 
+			//{
+			//	Chasing(DeltaTime);
+			//}
+
+			Chasing(DeltaTime);
 		}
 		else
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-			//Alert(DeltaTime);
+			Alert(DeltaTime);
 		}
 	}
 	else
 	{
-		//perhaps have the character spin around slowly before going back into patrol here at the end of alert call the spin as i have already made the fvector shit there
-
-		if (inFov)
-		{
-			//Chasing(DeltaTime);
-		}
-		else
-		{
-			//Patrol(DeltaTime);
-		}
+		//if (inFov)
+		//{
+		//	Chasing(DeltaTime);
+		//}
+		//else
+		//{
+		//	Patrol(DeltaTime);
+		//}
 	}
 	
 	/*
