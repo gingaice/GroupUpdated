@@ -60,6 +60,8 @@ public:
 	UPROPERTY()
 	class AMyProjectCharacter* character;
 
+	FVector getRandomPtInVolume();
+
 	void Patrol(float DeltaTime);
 	int _CurWaypoint;
 

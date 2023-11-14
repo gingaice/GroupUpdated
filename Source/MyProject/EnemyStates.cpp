@@ -56,7 +56,7 @@ void AEnemyStates::Tick(float DeltaTime)
 	{
 		EnemyForwardVector = GetActorForwardVector();
 
-		DistanceVector = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
+		DistanceVector = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation(); // add delay when reacha  destination
 		float DistanceVectorSize = DistanceVector.Length();
 
 		EnemyForwardVector.Normalize();
@@ -108,13 +108,19 @@ void AEnemyStates::Tick(float DeltaTime)
 
 }
 
+FVector AEnemyStates::getRandomPtInVolume()
+{
+	FVector roamExtent = MyCollisionSphere->Bounds.BoxExtent;
+	return UKismetMathLibrary::RandomPointInBoundingBox(GetActorLocation(), roamExtent);
+}
+
 void AEnemyStates::Patrol(float DeltaTime)
 {
 	if (ArrWaypoints.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO THINGIES"));
 
-		FVector targetVector = GetActorForwardVector();
+		FVector targetVector = getRandomPtInVolume();
 
 		FVector FacingVector = targetVector - GetActorLocation();
 		FRotator FacingRotate = FacingVector.Rotation();
