@@ -61,6 +61,8 @@ public:
 	class AMyProjectCharacter* character;
 
 	FVector getRandomPtInVolume();
+	FVector _goTo;
+	AwayPoints* _goToWaypoint;
 
 	void Patrol(float DeltaTime);
 	int _CurWaypoint;

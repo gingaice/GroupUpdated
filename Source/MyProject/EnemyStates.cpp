@@ -42,6 +42,8 @@ void AEnemyStates::BeginPlay()
 	{
 		_CurWaypoint = 0;
 	}
+
+	_goTo = getRandomPtInVolume();
 }
 
 // Called every frame
@@ -85,7 +87,6 @@ void AEnemyStates::Tick(float DeltaTime)
 			{
 				chase = true;
 				Chasing(DeltaTime);
-
 			}
 		}
 		else 
@@ -95,7 +96,6 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else
 	{
-
 		if (chase) 
 		{
 			Chasing(DeltaTime);
@@ -110,17 +110,19 @@ void AEnemyStates::Tick(float DeltaTime)
 
 FVector AEnemyStates::getRandomPtInVolume()
 {
-	FVector roamExtent = MyCollisionSphere->Bounds.BoxExtent;
-	return UKismetMathLibrary::RandomPointInBoundingBox(GetActorLocation(), roamExtent);
+	FVector roamExtent = MyCollisionSphere->Bounds.BoxExtent; //make it only on x axis
+	FVector Vect = UKismetMathLibrary::RandomPointInBoundingBox(GetActorLocation(), roamExtent);
+	Vect.Z = FMath::Clamp(Vect.Z, 0, 1);
+	return Vect;
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
 {
 	if (ArrWaypoints.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NO THINGIES"));
+		//UE_LOG(LogTemp, Warning, TEXT("NO THINGIES"));
 
-		FVector targetVector = getRandomPtInVolume();
+		FVector targetVector = _goTo; //make it add into the array, when dest reached
 
 		FVector FacingVector = targetVector - GetActorLocation();
 		FRotator FacingRotate = FacingVector.Rotation();
@@ -135,7 +137,11 @@ void AEnemyStates::Patrol(float DeltaTime)
 
 		SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
 
-		timer = timer - DeltaTime;
+		if (_floatdist <= 5)
+		{
+			_goTo = getRandomPtInVolume();
+		}
+		//timer = timer - DeltaTime;
 		if (timer <= 0)
 		{
 			Destroy();
