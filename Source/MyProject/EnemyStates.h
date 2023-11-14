@@ -31,6 +31,9 @@ protected:
 
 	bool chase = false;
 
+	//for dot prod
+	FVector EnemyForwardVector;
+	FVector DistanceVector;
 
 public:
 	// Called every frame
