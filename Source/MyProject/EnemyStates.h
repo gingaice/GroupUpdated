@@ -22,9 +22,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = EnemyStuff)
 	float speed = 400.0f;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = EnemyStuff)
+	float reactionTime = 1.5f;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	bool chase = false;
+
 
 public:
 	// Called every frame
@@ -32,9 +38,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* MyCollisionSphere;
-
-	UPROPERTY(VisibleAnywhere)
-	class UBoxComponent* MyCollisionBox;
 
 	// declare mesh component
 	UPROPERTY(VisibleAnywhere)
@@ -61,18 +64,11 @@ public:
 
 	void Alert(float DeltaTime);
 	bool _inTrigArea;
-	bool _inBoxTrigArea;
-
 
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	UFUNCTION()
-	void OnOverlapBeginBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnOverlapEndBox(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 
 	float PitchValue;
 	UPROPERTY(EditAnywhere, Category = Movement)

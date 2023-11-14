@@ -22,12 +22,6 @@ AEnemyStates::AEnemyStates()
 	MyCollisionSphere->SetCollisionProfileName("Trigger");
 	RootComponent = MyCollisionSphere;
 
-	MyCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("My Box Component"));
-	MyCollisionBox->InitBoxExtent(FVector(300,100,10));
-	MyCollisionBox->SetCollisionProfileName("Trigger");
-	MyCollisionBox->SetupAttachment(RootComponent);
-	MyCollisionBox->SetRelativeLocation(FVector(250, 0, 0));
-
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'")); 
 	UStaticMesh* Asset = MeshAsset.Object;
 	MyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("My Mesh"));
@@ -57,125 +51,88 @@ void AEnemyStates::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
-	MyCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBeginBox);
-	MyCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEndBox);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
-	
 	if (_inTrigArea)
 	{
-		//dotprod > 0.0 same dir
-		//dotpord == perpendicular
-		//dotprod < 0.0 opposiote
+		//if (!inFov) 
+		//{
+		//	FVector EnemyForwardVector = GetActorForwardVector();
 
-		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
-		//FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
+		//	FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
+		//	float DistanceVectorSize = DistanceVector.Length(); //  |F|
 
-		//float DistanceVectorSize = DistanceVector.Length(); //  |F|
-		//float PlayerForwardVectorSize = PlayerForwardVector.Length(); // |D|
-		////check the paint drawing for comment explain
+		//	EnemyForwardVector.Normalize();
+		//	//PlayerForwardVector.Normalize();
+		//	DistanceVector.Normalize(); // |D|
 
-		//auto DotProductResult = FVector::DotProduct(PlayerForwardVector, DistanceVector); //dot f.d
-		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
+		//	auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
 
-		//FVector PlayerForwardVector = character->GetActorForwardVector(); //	F
+		//	if ((DotProductResult >= 0.6))
+		//	{
+		//		UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+		//		inFov = true;
+		//	}
+
+		//}
+
 		FVector EnemyForwardVector = GetActorForwardVector();
-		//FVector DistanceVector = GetActorForwardVector() - character->GetActorForwardVector(); //	D
-		FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
 
+		FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
 		float DistanceVectorSize = DistanceVector.Length(); //  |F|
 
 		EnemyForwardVector.Normalize();
 		//PlayerForwardVector.Normalize();
 		DistanceVector.Normalize(); // |D|
 
-		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d  //change playerforward to enemyforward
+		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
 
-		//float _AngleRadian = FMath::Acos(DotProductResult);
-
-		//float AngleDegree = FMath::RadiansToDegrees(_AngleRadian);
-		 // ignore angle for now try using dot product, if dot < 0 should be in 90 forwards
-		//float theta = FMath::Atan2(DotProductResult, DistanceVectorSize * PlayerForwardVectorSize); //0
-		UE_LOG(LogTemp, Warning, TEXT("dotprdo:  %f"), DotProductResult);
-		//if ((DotProductResult > 0.0f) && (DistanceVectorSize <= AngleDegree)) // get rid of distance vector check on angle and dot prod should do its job and work
-		//{
-		//	UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
-		//}		
-		
-		if ((DotProductResult >= 0.6)) // get rid of distance vector check on angle and dot prod should do its job and work
+		if ((DotProductResult >= 0.6))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+			inFov = true;
 		}
+
+		//UE_LOG(LogTemp, Warning, TEXT("dotprdo:  %f"), DotProductResult);
 
 		if (inFov)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-			//FVector targetVector = GetActorForwardVector();
+			////UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+			//FVector targetVector = character->GetActorLocation();
 			//FVector FacingVector = targetVector - GetActorLocation();
 			//FRotator FacingRotate = FacingVector.Rotation();
 			//FQuat QuatRotation = FQuat(FacingRotate);
+			//SetActorRotation(QuatRotation);
 
-			//float reactionTime = 2.0f;
-			//reactionTime--;
+			//reactionTime = reactionTime - DeltaTime;
+
+			//UE_LOG(LogTemp, Warning, TEXT("tiemr:  %f"), reactionTime);
 			//if (reactionTime <= 0) 
 			//{
+			//	chase = true;
 			//	Chasing(DeltaTime);
+
 			//}
 
-			//Chasing(DeltaTime);
-		}
-		else
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-			//Alert(DeltaTime);
-		}
-	}
-	else
-	{
-		if (inFov)
-		{
-			//Chasing(DeltaTime);
-		}
-		else
-		{
-			//Patrol(DeltaTime);
-		}
-	}
-	
-	/*
-	if (_inTrigArea)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("intrig"));
-
-		Alert(DeltaTime);
-
-		if (_inBoxTrigArea)
-		{
-			inFov = true;
-
-			UE_LOG(LogTemp, Warning, TEXT("inboxtrig"));
-			if (inFov)
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-				Chasing(DeltaTime);
-			}
-		}
-
-		//UE_LOG(LogTemp, Warning, TEXT("angle:  %f"), angle);
-	}
-	else
-	{
-
-		if (inFov)
-		{
 			Chasing(DeltaTime);
 		}
 		else
 		{
+			//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+			Alert(DeltaTime);
+		}
+	}
+	else
+	{
+		if (chase) 
+		{
+			Chasing(DeltaTime);
+		} 
+		else 
+		{
 			Patrol(DeltaTime);
 		}
 	}
-	*/
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
@@ -244,11 +201,11 @@ void AEnemyStates::Patrol(float DeltaTime)
 void AEnemyStates::Chasing(float DeltaTime)
 {
 	//ROTATE TO PLAYER POS
-	FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation(); //gets players pos
-	FVector FacingVector = NewLocation - GetActorLocation(); //to workout whats inbetween the stuff
+	FVector EnemyLocation = GetActorLocation();
+	FVector NewLocation = character->GetActorLocation(); //gets players pos
+	FVector FacingVector = NewLocation - EnemyLocation; //to workout whats inbetween the stuff
 	FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
 	FQuat QuatRotation = FQuat(FacingRotate);
-	FVector EnemyLocation = this->GetActorLocation();
 
 	FVector MovementVector = NewLocation - EnemyLocation;
 
@@ -257,9 +214,7 @@ void AEnemyStates::Chasing(float DeltaTime)
 
 	FVector Vel = (MovementVector * speed * DeltaTime);
 
-	SetActorLocationAndRotation((CurLoc + Vel), QuatRotation); // caution means looks around near where player is, patrol is waypoints between back and forth for notes for paths?
-
-	//make states - idle standing chasing
+	SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
 
 	timer = timer - DeltaTime;
 	if (timer <= 0)
@@ -302,33 +257,6 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		if (character != nullptr)
 		{
 			_inTrigArea = false;
-		}
-	}
-}
-
-void AEnemyStates::OnOverlapBeginBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && (OtherActor != this))
-	{
-		character = Cast<AMyProjectCharacter>(OtherActor);
-
-		if (character != nullptr)
-		{
-			_inBoxTrigArea = true;
-		}
-	}
-}
-
-void AEnemyStates::OnOverlapEndBox(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor && (OtherActor != this) && OtherComp)
-	{
-
-		character = Cast<AMyProjectCharacter>(OtherActor);
-
-		if (character != nullptr)
-		{
-			_inBoxTrigArea = false;
 		}
 	}
 }
