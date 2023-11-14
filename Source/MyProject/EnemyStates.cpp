@@ -52,84 +52,52 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
 
-
 	if (_inTrigArea)
 	{
-		//if (!inFov) 
-		//{
-		//	FVector EnemyForwardVector = GetActorForwardVector();
-
-		//	FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
-		//	float DistanceVectorSize = DistanceVector.Length(); //  |F|
-
-		//	EnemyForwardVector.Normalize();
-		//	//PlayerForwardVector.Normalize();
-		//	DistanceVector.Normalize(); // |D|
-
-		//	auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
-
-		//	if ((DotProductResult >= 0.6))
-		//	{
-		//		UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
-		//		inFov = true;
-		//	}
-		//GetWorld()->GetFirstPlayerController()
-		//}
-
 		EnemyForwardVector = GetActorForwardVector();
 
-		DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
-		float DistanceVectorSize = DistanceVector.Length(); //  |F|
+		DistanceVector = character->GetActorLocation() - GetActorLocation();
+		float DistanceVectorSize = DistanceVector.Length();
 
 		EnemyForwardVector.Normalize();
-		//PlayerForwardVector.Normalize();
-		DistanceVector.Normalize(); // |D|
+		DistanceVector.Normalize();
 
-		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
+		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector);
 
 		if (DotProductResult >= 0.6)
 		{
 			inFov = true;
-			UE_LOG(LogTemp, Warning, TEXT("ineyes"));
-			if (inFov)
+		}
+
+		if (inFov) 
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+			FVector targetVector = character->GetActorLocation();
+			FVector FacingVector = targetVector - GetActorLocation();
+			FRotator FacingRotate = FacingVector.Rotation();
+			FQuat QuatRotation = FQuat(FacingRotate);
+			SetActorRotation(QuatRotation);
+
+			reactionTime = reactionTime - DeltaTime;
+
+			UE_LOG(LogTemp, Warning, TEXT("tiemr:  %f"), reactionTime);
+			if (reactionTime <= 0)
 			{
-				////UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-				//FVector targetVector = character->GetActorLocation();
-				//FVector FacingVector = targetVector - GetActorLocation();
-				//FRotator FacingRotate = FacingVector.Rotation();
-				//FQuat QuatRotation = FQuat(FacingRotate);
-				//SetActorRotation(QuatRotation);
-
-				//reactionTime = reactionTime - DeltaTime;
-
-				//UE_LOG(LogTemp, Warning, TEXT("tiemr:  %f"), reactionTime);
-				//if (reactionTime <= 0) 
-				//{
-				//	chase = true;
-				//	Chasing(DeltaTime);
-
-				//}
 				chase = true;
-				Chasing(DeltaTime);
+				//Chasing(DeltaTime);
+
 			}
-			else
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
-				Alert(DeltaTime);
-			}
+		}
+		else 
+		{
+			Alert(DeltaTime);
 		}
 	}
 	else
 	{
-		if (chase) 
-		{
-			Chasing(DeltaTime);
-		} 
-		else 
-		{
-			Patrol(DeltaTime);
-		}
+		Patrol(DeltaTime);
 	}
+
 }
 
 void AEnemyStates::Patrol(float DeltaTime)
@@ -196,20 +164,21 @@ void AEnemyStates::Patrol(float DeltaTime)
 void AEnemyStates::Chasing(float DeltaTime)
 {
 	//ROTATE TO PLAYER POS
-	FVector EnemyLocation = GetActorLocation();
-	FVector NewLocation = character->GetActorLocation(); //gets players pos
-	FVector FacingVector = NewLocation - EnemyLocation; //to workout whats inbetween the stuff
-	FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
-	FQuat QuatRotation = FQuat(FacingRotate);
+	//FVector EnemyLocation = GetActorLocation();
+	//FVector NewLocation = character->GetActorLocation(); //gets players pos
+	//FVector FacingVector = NewLocation - EnemyLocation; //to workout whats inbetween the stuff
+	//FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
+	//FQuat QuatRotation = FQuat(FacingRotate);
 
-	FVector MovementVector = NewLocation - EnemyLocation;
+	//FVector MovementVector = NewLocation - EnemyLocation;
 
-	MovementVector.Normalize();
-	FVector CurLoc = GetActorLocation();
+	//MovementVector.Normalize();
+	//FVector CurLoc = GetActorLocation();
 
-	FVector Vel = (MovementVector * speed * DeltaTime);
+	//FVector Vel = (MovementVector * speed * DeltaTime);
 
-	SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
+	//SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
+
 
 	timer = timer - DeltaTime;
 	if (timer <= 0)
@@ -252,6 +221,88 @@ void AEnemyStates::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		if (character != nullptr)
 		{
 			_inTrigArea = false;
+			reactionTime = 1.5f;
 		}
 	}
 }
+
+
+/*
+	if (_inTrigArea)
+	{
+		//if (!inFov)
+		//{
+		//	FVector EnemyForwardVector = GetActorForwardVector();
+
+		//	FVector DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
+		//	float DistanceVectorSize = DistanceVector.Length(); //  |F|
+
+		//	EnemyForwardVector.Normalize();
+		//	//PlayerForwardVector.Normalize();
+		//	DistanceVector.Normalize(); // |D|
+
+		//	auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
+
+		//	if ((DotProductResult >= 0.6))
+		//	{
+		//		UE_LOG(LogTemp, Warning, TEXT("correctamundo"));
+		//		inFov = true;
+		//	}
+		//GetWorld()->GetFirstPlayerController()
+		//}
+
+		EnemyForwardVector = GetActorForwardVector();
+
+		DistanceVector = character->GetActorLocation() - GetActorLocation(); //	D
+		float DistanceVectorSize = DistanceVector.Length(); //  |F|
+
+		EnemyForwardVector.Normalize();
+		//PlayerForwardVector.Normalize();
+		DistanceVector.Normalize(); // |D|
+
+		auto DotProductResult = FVector::DotProduct(EnemyForwardVector, DistanceVector); //dot f.d
+
+		if (DotProductResult >= 0.6)
+		{
+			inFov = true;
+			UE_LOG(LogTemp, Warning, TEXT("ineyes"));
+			if (inFov)
+			{
+				////UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
+				//FVector targetVector = character->GetActorLocation();
+				//FVector FacingVector = targetVector - GetActorLocation();
+				//FRotator FacingRotate = FacingVector.Rotation();
+				//FQuat QuatRotation = FQuat(FacingRotate);
+				//SetActorRotation(QuatRotation);
+
+				//reactionTime = reactionTime - DeltaTime;
+
+				//UE_LOG(LogTemp, Warning, TEXT("tiemr:  %f"), reactionTime);
+				//if (reactionTime <= 0)
+				//{
+				//	chase = true;
+				//	Chasing(DeltaTime);
+
+				//}
+				chase = true;
+				Chasing(DeltaTime);
+			}
+			else
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("bing bong alsert"));
+				Alert(DeltaTime);
+			}
+		}
+	}
+	else
+	{
+		if (chase)
+		{
+			Chasing(DeltaTime);
+		}
+		else
+		{
+			Patrol(DeltaTime);
+		}
+	}
+*/
