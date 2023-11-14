@@ -47,6 +47,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 	float health;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+	FString levelName;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

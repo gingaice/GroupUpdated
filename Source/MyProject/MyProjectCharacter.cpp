@@ -108,9 +108,13 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 		}
 	}
 
+
+	health = 0;
 	if (health <= 0)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		FName levelFName = FName(*levelName);
+		UGameplayStatics::OpenLevel(GetWorld(), levelFName);
 	}
 }
 
