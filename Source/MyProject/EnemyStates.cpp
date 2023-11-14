@@ -51,12 +51,12 @@ void AEnemyStates::Tick(float DeltaTime)
 	MyCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemyStates::OnOverlapBegin);
 	MyCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemyStates::OnOverlapEnd);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, FColor::Purple, false, -1, 0, 1);
-
+	//character = GetWorld()->GetFirstPlayerController();
 	if (_inTrigArea)
 	{
 		EnemyForwardVector = GetActorForwardVector();
 
-		DistanceVector = character->GetActorLocation() - GetActorLocation();
+		DistanceVector = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - GetActorLocation();
 		float DistanceVectorSize = DistanceVector.Length();
 
 		EnemyForwardVector.Normalize();
@@ -72,7 +72,7 @@ void AEnemyStates::Tick(float DeltaTime)
 		if (inFov) 
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("bing bong fov"));
-			FVector targetVector = character->GetActorLocation();
+			FVector targetVector = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 			FVector FacingVector = targetVector - GetActorLocation();
 			FRotator FacingRotate = FacingVector.Rotation();
 			FQuat QuatRotation = FQuat(FacingRotate);
@@ -84,7 +84,7 @@ void AEnemyStates::Tick(float DeltaTime)
 			if (reactionTime <= 0)
 			{
 				chase = true;
-				//Chasing(DeltaTime);
+				Chasing(DeltaTime);
 
 			}
 		}
@@ -95,7 +95,15 @@ void AEnemyStates::Tick(float DeltaTime)
 	}
 	else
 	{
-		Patrol(DeltaTime);
+
+		if (chase) 
+		{
+			Chasing(DeltaTime);
+		}
+		else 
+		{
+			Patrol(DeltaTime);
+		}
 	}
 
 }
@@ -164,20 +172,21 @@ void AEnemyStates::Patrol(float DeltaTime)
 void AEnemyStates::Chasing(float DeltaTime)
 {
 	//ROTATE TO PLAYER POS
-	//FVector EnemyLocation = GetActorLocation();
+	FVector EnemyLocation = GetActorLocation();
 	//FVector NewLocation = character->GetActorLocation(); //gets players pos
-	//FVector FacingVector = NewLocation - EnemyLocation; //to workout whats inbetween the stuff
-	//FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
-	//FQuat QuatRotation = FQuat(FacingRotate);
+	FVector NewLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation(); //gets players pos
+	FVector FacingVector = NewLocation - EnemyLocation; //to workout whats inbetween the stuff
+	FRotator FacingRotate = FacingVector.Rotation(); //to spin the enemy round to see the player
+	FQuat QuatRotation = FQuat(FacingRotate);
 
-	//FVector MovementVector = NewLocation - EnemyLocation;
+	FVector MovementVector = NewLocation - EnemyLocation;
 
-	//MovementVector.Normalize();
-	//FVector CurLoc = GetActorLocation();
+	MovementVector.Normalize();
+	FVector CurLoc = GetActorLocation();
 
-	//FVector Vel = (MovementVector * speed * DeltaTime);
+	FVector Vel = (MovementVector * speed * DeltaTime);
 
-	//SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
+	SetActorLocationAndRotation((CurLoc + Vel), QuatRotation);
 
 
 	timer = timer - DeltaTime;
