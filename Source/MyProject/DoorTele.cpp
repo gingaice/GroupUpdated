@@ -4,6 +4,7 @@
 #include "DoorTele.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "MyProjectCharacter.h"
 
 // Sets default values
@@ -56,12 +57,14 @@ void ADoorTele::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class 
 			//AMyCharacterTest* character = Cast<AMyCharacterTest>(OtherActor);
 			if (character && !otherDoor->tele)
 			{
-				tele = true;
-				UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
-				character->SetActorRotation(otherDoor->GetActorRotation());
-				character->GetController()->SetControlRotation(character->GetActorRotation());
-				character->SetActorLocation(otherDoor->GetActorLocation());
-				//SetActorLocation()
+				FName levelFName = FName(*levelName);
+				UGameplayStatics::OpenLevel(GetWorld(), levelFName);
+
+				//tele = true;
+				//UE_LOG(LogTemp, Warning, TEXT("correct fella is : %s"), *OtherActor->GetName());
+				//character->SetActorRotation(otherDoor->GetActorRotation());
+				//character->GetController()->SetControlRotation(character->GetActorRotation());
+				//character->SetActorLocation(otherDoor->GetActorLocation());
 			}
 		}
 

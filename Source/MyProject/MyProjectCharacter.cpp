@@ -108,8 +108,6 @@ void AMyProjectCharacter::Tick(float DeltaTime)
 		}
 	}
 
-
-	health = 0;
 	if (health <= 0)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
